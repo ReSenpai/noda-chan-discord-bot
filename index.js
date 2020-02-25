@@ -156,6 +156,7 @@ bot.on('message', async message => {
                     connection.query(sql_last_index, function (error, results, fields) {
                             console.log('results: ')
                             console.log(results);
+                            console.log(results[0]['last_index']);
                             question_id = results[0]['last_index'];
                     });
 
