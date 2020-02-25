@@ -163,6 +163,7 @@ bot.on('message', async message => {
 
                     connection.query(sql_last_index,
                         function (error, results, fields) {
+                            print('results: ' + results);
                             question_id = result[0]['last_index'];
                     });
 
@@ -223,6 +224,34 @@ bot.on('message', async message => {
 
             // log users
             sql_get_users = `SELECT * FROM users`
+            console.log(sql_get_users);
+            connection.query(sql_get_users, function (error, results, fields) {
+                console.log('error: ' + error);
+                console.log('users: ');
+                console.log(results);
+            });
+
+            // log users
+            sql_get_users = `SELECT * FROM questions`
+            console.log(sql_get_users);
+            connection.query(sql_get_users, function (error, results, fields) {
+                console.log('error: ' + error);
+                console.log('users: ');
+                console.log(results);
+            });
+
+            // log users
+            sql_get_users = `SELECT * FROM answers`
+            console.log(sql_get_users);
+            connection.query(sql_get_users, function (error, results, fields) {
+                console.log('error: ' + error);
+                console.log('users: ');
+                console.log(results);
+            });
+
+            // log users
+            sql_get_users = `SELECT * FROM conn_quest_ans`
+            console.log(sql_get_users);
             connection.query(sql_get_users, function (error, results, fields) {
                 console.log('error: ' + error);
                 console.log('users: ');
