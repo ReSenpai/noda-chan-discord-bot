@@ -70,7 +70,7 @@ bot.on('message', async message => {
         message.channel.send(msg)
     }
 
-    sql_add_user = 
+    const sql_add_user = 
     `INSERT IGNORE INTO users (user_id, user_name, server_name)
         VALUES ('${uid}', '${username}', '${nickname}')`;
 
@@ -82,7 +82,7 @@ bot.on('message', async message => {
         // console.log(fields);
     });
 
-    sql_get_user_info =
+    const sql_get_user_info =
     `SELECT * FROM users
         WHERE user_id = '${uid}'`;
 
@@ -134,15 +134,15 @@ bot.on('message', async message => {
                     question = args[1].slice(0, args[1].length - 1);
                     answer = args[2].slice(0, args[2].length - 1);
 
-                    sql_add_question = 
+                    const sql_add_question = 
                     `INSERT INTO questions (text)
                         VALUES ('${question}')`;
                     
-                    sql_add_answer = 
+                        const sql_add_answer = 
                     `INSERT INTO answers (text)
                         VALUES ('${answer}')`;
 
-                    sql_last_index = 
+                        const sql_last_index = 
                     `SELECT LAST_INSERT_ID() AS last_index`;
 
                     var question_id = null;
@@ -168,7 +168,7 @@ bot.on('message', async message => {
                         answer_id = results[0]['last_index'];
                     });
 
-                    sql_connect_question = 
+                    const sql_connect_question = 
                     `INSERT INTO conn_quest_ans (question_id, answer_id, user_id)
                         VALUES ('${question_id}', '${answer_id}', '${uid}');`;
 
@@ -200,7 +200,7 @@ bot.on('message', async message => {
                 }
             }
 
-            sql_upd_user_info = 
+            const sql_upd_user_info = 
             `UPDATE users
                 SET coins = '${coins}', exp = '${exp}', lvl = '${lvl}'
                 WHERE user_id = '${uid}'`;
@@ -211,38 +211,34 @@ bot.on('message', async message => {
             });
 
             // log users
-            sql_get_users = `SELECT * FROM users`
+            const sql_get_users = `SELECT * FROM users`
             console.log(sql_get_users);
             connection.query(sql_get_users, function (error, results, fields) {
-                console.log('error: ' + error);
                 console.log('users: ');
                 console.log(results);
             });
 
             // log users
-            sql_get_users = `SELECT * FROM questions`
-            console.log(sql_get_users);
-            connection.query(sql_get_users, function (error, results, fields) {
-                console.log('error: ' + error);
-                console.log('users: ');
+            const sql_get_questions = `SELECT * FROM questions`
+            console.log(sql_get_questions);
+            connection.query(sql_get_questions, function (error, results, fields) {
+                console.log('questions: ');
                 console.log(results);
             });
 
             // log users
-            sql_get_users = `SELECT * FROM answers`
-            console.log(sql_get_users);
-            connection.query(sql_get_users, function (error, results, fields) {
-                console.log('error: ' + error);
-                console.log('users: ');
+            const sql_get_answers = `SELECT * FROM answers`
+            console.log(sql_get_answers);
+            connection.query(sql_get_answers, function (error, results, fields) {
+                console.log('answers: ');
                 console.log(results);
             });
 
             // log users
-            sql_get_users = `SELECT * FROM conn_quest_ans`
-            console.log(sql_get_users);
-            connection.query(sql_get_users, function (error, results, fields) {
-                console.log('error: ' + error);
-                console.log('users: ');
+            const sql_get_conn_quest = `SELECT * FROM conn_quest_ans`
+            console.log(sql_get_conn_quest);
+            connection.query(sql_get_conn_quest, function (error, results, fields) {
+                console.log('conn_quest: ');
                 console.log(results);
             });
         }
