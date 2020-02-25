@@ -159,7 +159,7 @@ bot.on('message', async message => {
                             console.log(results[0]['last_index']);
                             question_id = results[0]['last_index'];
                     });
-
+                    console.log(question_id);
                     connection.query(sql_add_answer, function (error, results, fields) {
                     //    console.log('error: ' + error);
                     //    console.log(results);
