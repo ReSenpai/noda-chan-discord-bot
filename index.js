@@ -100,7 +100,7 @@ bot.on('message', async message => {
                     .setTitle(`Нода-шоп!`)
                     .setColor(0xebe134)
                     .setDescription(`
-                    Ваш баланс монет: ${userLvl[uid].coins}
+                    Ваш баланс монет: ${coins}
                     Купить общий вопрос: 25 чеканных монет
                     Купить личный вопрос: 100 чеканных монет
     
