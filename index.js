@@ -137,9 +137,13 @@ bot.on('message', async message => {
                     sql_add_question = 
                     `INSERT INTO questions (text)
                         VALUES ('${question}')`;
+                    
                     sql_add_answer = 
                     `INSERT INTO answers (text)
                         VALUES ('${answer}')`;
+
+                    sql_last_index = 
+                    `SELECT LAST_INSERT_ID() AS last_index`;
 
                     connection.query(sql_add_question,
                         function (error, results, fields) {
@@ -148,12 +152,42 @@ bot.on('message', async message => {
                         // console.log(fields);
                     });
 
+                    var question_id = null;
+                    var answer_id = null;
+                    connection.query(sql_add_question,
+                        function (error, results, fields) {
+                    //    console.log('error: ' + error);
+                    //    console.log(results);
+                    //    console.log(fields);
+                    });
+
+                    connection.query(sql_last_index,
+                        function (error, results, fields) {
+                            question_id = result[0]['last_index'];
+                    });
+
                     connection.query(sql_add_answer,
                         function (error, results, fields) {
                     //    console.log('error: ' + error);
                     //    console.log(results);
                     //    console.log(fields);
-                   });
+                    });
+
+                    connection.query(sql_last_index,
+                    function (error, results, fields) {
+                        answer_id = result[0]['last_index'];
+                    });
+
+                    sql_connect_question = 
+                    `INSERT INTO conn_quest_ans (question_id, answer_id, user_id)
+                        VALUES ('${question_id}', '${answer_id}', '${uid}');`;
+
+                    connection.query(sql_connect_question,
+                        function (error, results, fields) {
+                    //    console.log('error: ' + error);
+                    //    console.log(results);
+                    //    console.log(fields);
+                    });
 
                     const commonQuestionBye = new RichEmbed()
                     .setTitle(`Покупка оформлена.`)
