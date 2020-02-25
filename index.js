@@ -93,7 +93,7 @@ bot.on('message', async message => {
 
     connection.query(sql_add_user, function (error, results, fields) {
         console.log('error: ' + error);
-        console.log(results);
+        // console.log(results);
         // console.log(fields);
     });
 
@@ -112,7 +112,7 @@ bot.on('message', async message => {
 
     connection.query(sql_add_coins_exp, function (error, results, fields) {
         console.log('error: ' + error);
-        console.log(results);
+        // console.log(results);
         // console.log(fields);
     });
 
@@ -134,11 +134,18 @@ bot.on('message', async message => {
                 WHERE user_id = '${uid}'`;
                 connection.query(sql_lvl_up, function (error, results, fields) {
                     console.log('error: ' + error);
-                    console.log(results);
+                    // console.log(results);
                     // console.log(fields);
                 });
             }
         }
+    });
+
+    sql_get_users = `SELECT * FROM users`
+    connection.query(sql_get_users, function (error, results, fields) {
+        console.log('error: ' + error);
+        console.log('users: ');
+        console.log(results);
     });
 
     
