@@ -136,9 +136,11 @@ bot.on('message', async message => {
 
                     sql_add_question = 
                     `INSERT INTO questions (text)
-                        VALUES ('${question}');
+                        VALUES ('${question}');`;
+                    sql_add_answer = `
                     INSERT INTO answers (text)
-                        VALUES ('${answer}');`;
+                        VALUES ('${answer}');
+                    `;
 
                     connection.query(sql_add_question,
                          function (error, results, fields) {
@@ -146,6 +148,13 @@ bot.on('message', async message => {
                         console.log(results);
                         console.log(fields);
                     });
+
+                    connection.query(sql_add_answer,
+                        function (error, results, fields) {
+                       console.log('error: ' + error);
+                       console.log(results);
+                       console.log(fields);
+                   });
 
                     const commonQuestionBye = new RichEmbed()
                     .setTitle(`Покупка оформлена.`)
