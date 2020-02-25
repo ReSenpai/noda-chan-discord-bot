@@ -143,7 +143,7 @@ bot.on('message', async message => {
                     connection.query(sql_add_question,
                          function (error, results, fields) {
                         // console.log('error: ' + error);
-                        // console.log(results);
+                        console.log(results);
                         // console.log(fields);
                     });
 
@@ -170,7 +170,8 @@ bot.on('message', async message => {
             }
 
             sql_upd_user_info = 
-            ``;
+            `UPDATE users
+                SET coins = '${coins}, '`;
 
             // log users
             sql_get_users = `SELECT * FROM users`
