@@ -70,21 +70,6 @@ bot.on('message', async message => {
         message.channel.send(msg)
     }
 
-    // if(!userLvl[uid]) {
-    //     userLvl[uid] = {
-    //         nickname: nickname,
-    //         username: username,
-    //         coins: 10,
-    //         warns: 0,
-    //         xp: 0,
-    //         lvl: 0,
-    //         questions: {
-    //             question: [],
-    //             answer: []
-    //         }
-    //     }
-    // }
-
     sql_add_user = 
     `INSERT IGNORE INTO users (user_id, user_name, server_name)
         VALUES ('${uid}', '${username}', '${nickname}')`;
@@ -92,69 +77,145 @@ bot.on('message', async message => {
     console.log('sql_add_user:\n' + sql_add_user);
 
     connection.query(sql_add_user, function (error, results, fields) {
-        console.log('error: ' + error);
+        // console.log('error: ' + error);
         // console.log(results);
         // console.log(fields);
     });
+
+    sql_get_user_info =
+    `SELECT * FROM users
+        WHERE user_id = '${uid}'`;
 
     
-
-    // const u = userLvl[uid];
-    // u.coins++;
-    // u.xp++;
-
-    sql_add_coins_exp = 
-    `UPDATE users
-        SET coins = coins + 1, exp = exp + 1
-        WHERE user_id = '${uid}'`;
-
-    console.log('sql_add_coins_exp:\n' + sql_add_coins_exp);
-
-    connection.query(sql_add_coins_exp, function (error, results, fields) {
-        console.log('error: ' + error);
-        // console.log(results);
-        // console.log(fields);
-    });
-
-    sql_upd_lvl =
-    `SELECT exp, lvl FROM users
-        WHERE user_id = '${uid}'`;
-
-    connection.query(sql_upd_lvl, function (error, results, fields) {
-        console.log('error: ' + error);
-        console.log(results);
-        // console.log(fields);
+    connection.query(sql_get_user_info, function (error, results, fields) {
         if (results) {
+            var coins = results[0]['coins'];
             var exp = results[0]['exp'];
             var lvl = results[0]['lvl'];
-            if(exp >= (lvl * 5)) {
-                sql_lvl_up = 
-                `UPDATE users
-                SET lvl = lvl + 1, exp = 0
-                WHERE user_id = '${uid}'`;
-                connection.query(sql_lvl_up, function (error, results, fields) {
-                    console.log('error: ' + error);
-                    // console.log(results);
-                    // console.log(fields);
-                });
+            var nickname = results[0]['server_name'];
+            var username = results[0]['user_name'];
+
+            if(/!купить вопрос$/i.test(message.content)){
+                const shop = new RichEmbed()
+                    .setTitle(`Нода-шоп!`)
+                    .setColor(0xebe134)
+                    .setDescription(`
+                    Ваш баланс монет: ${userLvl[uid].coins}
+                    Купить общий вопрос: 25 чеканных монет
+                    Купить личный вопрос: 100 чеканных монет
+    
+                    Для покупки общего вопроса напишите: !купить общий вопрос
+                    `);
+                message.channel.send(shop);
+            } else if(/!купить общий вопрос$/i.test(message.content)){
+                if(coins >= 25){
+                    const commonQuestion = new RichEmbed()
+                    .setTitle(`Покупка общего вопроса.`)
+                    .setColor(0xebe134)
+                    .setDescription(`
+                    Ваш баланс монет: ${coins}
+                    Для покупки вопроса напишите или лучше скопируйте как шаблон:
+                    !вопрос [Тут пишите ваш вопрос, обязательно в квадратных скобочках] [А тут ваш ответ, так же в квадратных скобочках]
+                    `);
+                    message.channel.send(commonQuestion);
+                } else {
+                    const commonQuestionFalse = new RichEmbed()
+                    .setTitle(`Отказано.`)
+                    .setColor(0xFF0000)
+                    .setDescription(`
+                    Не хватает чеканных монет, ваш баланс: ${coins}
+                    `);
+                    message.channel.send(commonQuestionFalse);
+                }   
+            } else if(/!вопрос/i.test(message.content)){
+                let args = message.content.split(" [");
+                if(coins >= 25){
+                    coins -= 25;
+                    question = args[1].slice(0, args[1].length - 1);
+                    answer = args[2].slice(0, args[2].length - 1);
+
+                    sql_add_question = 
+                    `INSERT INTO questions (text)
+                        VALUES ('${question}');
+                    INSERT INTO answers (text)
+                        VALUES ('${answer}');`;
+
+                    connection.query(sql_add_question,
+                         function (error, results, fields) {
+                        // console.log('error: ' + error);
+                        // console.log(results);
+                        // console.log(fields);
+                    });
+
+                    const commonQuestionBye = new RichEmbed()
+                    .setTitle(`Покупка оформлена.`)
+                    .setColor(0x36D904)
+                    .setDescription(`
+                    Ваш вопрос: ${question}
+                    Ваш ответ: ${answer}
+                    Осталось чеканных монет: ${coins}
+                    Приятного использования😘
+                    `);
+                    message.channel.send(commonQuestionBye);
+                } else {
+                    message.channel.send(`Не хватает чеканных монет, ваш баланс: ${u.coins}`);
+                }
+            } else {
+                coins += 1;
+                exp += 1;
+                if (exp >= lvl * 5) {
+                    exp = 0;
+                    lvl += 1;
+                }
             }
+
+            // log users
+            sql_get_users = `SELECT * FROM users`
+            connection.query(sql_get_users, function (error, results, fields) {
+                console.log('error: ' + error);
+                console.log('users: ');
+                console.log(results);
+            });
         }
     });
 
-    sql_get_users = `SELECT * FROM users`
-    connection.query(sql_get_users, function (error, results, fields) {
-        console.log('error: ' + error);
-        console.log('users: ');
-        console.log(results);
-    });
+    // sql_add_coins_exp = 
+    // `UPDATE users
+    //     SET coins = coins + 1, exp = exp + 1
+    //     WHERE user_id = '${uid}'`;
 
-    
+    // console.log('sql_add_coins_exp:\n' + sql_add_coins_exp);
 
-    // fs.writeFile('./user_lvl.json', JSON.stringify(userLvl), (err) => {
-    //     if(err){
-    //         console.log(err)
+    // connection.query(sql_add_coins_exp, function (error, results, fields) {
+    //     // console.log('error: ' + error);
+    //     // console.log(results);
+    //     // console.log(fields);
+    // });
+
+    // sql_upd_lvl =
+    // `SELECT exp, lvl FROM users
+    //     WHERE user_id = '${uid}'`;
+
+    // connection.query(sql_upd_lvl, function (error, results, fields) {
+    //     // console.log('error: ' + error);
+    //     // console.log(results);
+    //     // console.log(fields);
+    //     if (results) {
+    //         var exp = results[0]['exp'];
+    //         var lvl = results[0]['lvl'];
+    //         if(exp >= (lvl * 5)) {
+    //             sql_lvl_up = 
+    //             `UPDATE users
+    //             SET lvl = lvl + 1, exp = 0
+    //             WHERE user_id = '${uid}'`;
+    //             connection.query(sql_lvl_up, function (error, results, fields) {
+    //                 // console.log('error: ' + error);
+    //                 // console.log(results);
+    //                 // console.log(fields);
+    //             });
+    //         }
     //     }
-    // })
+    // });
     
     // if(message.channel.id === '677624287649333268' || message.channel.id === '678701864514224170' || message.channel.id === '624327775935004687') {
     //     if(/Нода дай монеток$|!монетки/i.test(message.content)){
@@ -175,7 +236,7 @@ bot.on('message', async message => {
 
 // Блок с вопросами боту
 
-bot.on('message', async message => {
+/*bot.on('message', async message => {
 
     if(message.author.bot) return;
 
@@ -285,7 +346,7 @@ bot.on('message', async message => {
     }
 
     
-});
+});*/
 
 // Покупка вопросов для ноды
 
@@ -296,77 +357,6 @@ bot.on('message', async message => {
         const uid = message.author.id;
         const u = userLvl[uid];
 
-        if(/!купить вопрос$/i.test(message.content)){
-            u.coins -= 1;
-            const shop = new RichEmbed()
-                .setTitle(`Нода-шоп!`)
-                .setColor(0xebe134)
-                .setDescription(`
-                Ваш баланс монет: ${userLvl[uid].coins}
-                Купить общий вопрос: 25 чеканных монет
-                Купить личный вопрос: 100 чеканных монет
-
-                Для покупки общего вопроса напишите: !купить общий вопрос
-                `);
-            message.channel.send(shop);
-        }
-
-        if(!answers[uid]) {
-            answers[uid] = {
-                question: [],
-                answer: []
-            }
-        }
-
-        const question = answers[uid].question;
-        const answer = answers[uid].answer;
-
-        if(/!купить общий вопрос$/i.test(message.content)){
-            u.coins -= 1;
-            if(userLvl[uid].coins >= 25){
-                const commonQuestion = new RichEmbed()
-                .setTitle(`Покупка общего вопроса.`)
-                .setColor(0xebe134)
-                .setDescription(`
-                Ваш баланс монет: ${userLvl[uid].coins}
-                Для покупки вопроса напишите или лучше скопируйте как шаблон:
-                !вопрос [Тут пишите ваш вопрос, обязательно в квадратных скобочках] [А тут ваш ответ, так же в квадратных скобочках]
-                `);
-                message.channel.send(commonQuestion);
-            } else {
-                const commonQuestionFalse = new RichEmbed()
-                .setTitle(`Отказано.`)
-                .setColor(0xFF0000)
-                .setDescription(`
-                Не хватает чеканных монет, ваш баланс: ${userLvl[uid].coins}
-                `);
-                message.channel.send(commonQuestionFalse);
-            }
-            
-        }
-
-        if(/!вопрос/i.test(message.content)){
-            let args = message.content.split(" [");
-            if(u.coins >= 25){
-                u.coins -= 26;
-                question.push(args[1].slice(0, args[1].length - 1));
-                answer.push(args[2].slice(0, args[2].length - 1));
-                const commonQuestionBye = new RichEmbed()
-                .setTitle(`Покупка оформлена.`)
-                .setColor(0x36D904)
-                .setDescription(`
-                Ваш вопрос: ${args[1].slice(0, args[1].length - 1)}
-                Ваш ответ: ${args[2].slice(0, args[2].length - 1)}
-                Осталось чеканных монет: ${u.coins}
-                Приятного использования😘
-                `);
-                message.channel.send(commonQuestionBye);
-            } else {
-                u.coins -= 1;
-                message.channel.send(`Не хватает чеканных монет, ваш баланс: ${u.coins}`);
-            }
-            // console.log(args);
-        }
 
         fs.writeFile('./answers.json', JSON.stringify(answers), (err) => {
             if(err){
