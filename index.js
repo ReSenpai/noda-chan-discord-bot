@@ -4,6 +4,7 @@ const config = require('./config.json');
 const fs = require('fs');
 const userLvl = require('./user_lvl.json');
 const answers = require('./answers.json');
+const mysql = require('mysql');
 // const constructors = require('./functions/constructors.js');
 const { Attachment, RichEmbed, Emoji, Guild, Client } = require('discord.js');
 
@@ -12,8 +13,22 @@ const bot = new Discord.Client();
 bot.commands = new Discord.Collection();
 const token = config.token;
 const prefix = config.prefix;
+const connection  = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: "mydb"
+});
 
 bot.login(token);
+
+connection.connect(function(err) {
+    if (err) {
+        console.error('DB / database connection error: ' + err.stack);
+        return;
+    }
+    console.log('DB / connected as id ' + connection.threadId);
+});
 
 fs.readdir('./modules/',(err,files)=>{
     if(err) console.log(err);
