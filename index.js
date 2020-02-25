@@ -4,6 +4,7 @@ const config = require('./config.json');
 const fs = require('fs');
 const userLvl = require('./user_lvl.json');
 const answers = require('./answers.json');
+// const constructors = require('./functions/constructors.js');
 const { Attachment, RichEmbed, Emoji, Guild, Client } = require('discord.js');
 
 // - vars
@@ -14,27 +15,31 @@ const prefix = config.prefix;
 
 bot.login(token);
 
-// fs.readdir('./modules/',(err,files)=>{
-//     if(err) console.log(err);
-//     let jsfiles = files.filter(f => f.split(".").pop() === "js");
-//     if(jsfiles.length <=0) console.log("Нет комманд для загрузки!!");
-//     console.log(`Загружено ${jsfiles.length} комманд`);
-//     jsfiles.forEach((f,i) =>{
-//         let props = require(`./modules/${f}`);
-//         console.log(`${i+1}.${f} Загружен!`);
-//         bot.commands.set(props.help.name,props);
-//     });
-// });
-
-
-bot.on('ready', async () => {
-    console.log(`Нода тян запущена`);
-    bot.generateInvite(["ADMINISTRATOR"]).then(link => {
-        console.log(link);
-    }).catch(err => {
-        console.log(err.stack);
-    })
+fs.readdir('./modules/',(err,files)=>{
+    if(err) console.log(err);
+    let jsfiles = files.filter(f => f.split(".").pop() === "js");
+    if(jsfiles.length <=0) console.log("Нет комманд для загрузки!!");
+    console.log(`Загружено ${jsfiles.length} комманд`);
+    jsfiles.forEach((f,i) =>{
+        let props = require(`./modules/${f}`);
+        console.log(`${i+1}.${f} Загружен!`);
+        for(let i = 0; i < props.help.name.length; i++){
+            bot.commands.set(props.help.name[i],props);
+            // console.log(props.help.name[i])
+        }
+        // console.log(props.help.name);
+    });
 });
+
+
+// bot.on('ready', async () => {
+//     console.log(`Нода тян запущена`);
+//     bot.generateInvite(["ADMINISTRATOR"]).then(link => {
+//         console.log(link);
+//     }).catch(err => {
+//         console.log(err.stack);
+//     })
+// });
 
 
 // Конструктор прокачки профилей дискорда
@@ -154,6 +159,9 @@ bot.on('message', async message => {
         if (message.content === '!кубик') {
             message.channel.send(Math.ceil(Math.random() * 10));
         }
+        if (message.content === 'Нода попращайся') {
+            message.channel.send('До новых встре:3');
+        }
         
         if (/!профиль$|нода покажи мой профиль/i.test(message.content)) {
             const uid = message.author.id;
@@ -172,7 +180,8 @@ bot.on('message', async message => {
                 :trophy:LVL: ${userLvl[uid].lvl}
                 :jigsaw:XP: ${userLvl[uid].xp}
                 Чеканных монет: ${userLvl[uid].coins} :moneybag:
-                Общих вопросов куплено: ${answers[uid].answer.length}`);
+                Общих вопросов куплено: ${answers[uid].answer.length}`)
+                .setThumbnail(message.author.avatarURL)
                 message.channel.send(embed);
             } else {
                 let embed = new RichEmbed()
@@ -182,7 +191,8 @@ bot.on('message', async message => {
                 :trophy:LVL: ${userLvl[uid].lvl}
                 :jigsaw:XP: ${userLvl[uid].xp}
                 :moneybag:Чеканных монет: ${userLvl[uid].coins}
-                :key:Общих вопросов куплено: ${answers[uid].answer.length}`);
+                :key:Общих вопросов куплено: ${answers[uid].answer.length}`)
+                .setThumbnail(message.author.avatarURL)
                 message.channel.send(embed);
             }
         }
@@ -292,24 +302,19 @@ bot.on('message', async message => {
         })
     }
 
+    let messageArray = message.content.split(" ");
+    let command = messageArray[0].toLowerCase();
+    let args = messageArray.slice(1);
+    if(!message.content.startsWith(prefix)) return;
+    let cmd = bot.commands.get(command.slice(prefix.length));
+    if(cmd) cmd.run(bot,message,args);
+    bot.rUser = message.guild.member(message.mentions.users.first() || message.guild.members.get(args[0]));
+    bot.uId = message.author.id;
+
+    // console.log(cmd);
+
+
 });
-
-// Сбор логов
-
-// bot.on('message', async message => {
-//     if(message.author.bot) return;
-
-//     if (message.content === '!id') {
-//         console.log(message.author.id);
-//         message.channel.send('Ок, я увидела твой id');
-//     } else if(message.content === '!log'){
-//         console.log(message.author);
-//         message.channel.send('Логи собраны');
-//     } else if(message.content === '!channelid'){
-//         message.channel.send('id канала собрано');
-//         console.log(message.channel.id)
-//     }
-// });
 
 
 // Новый участник
