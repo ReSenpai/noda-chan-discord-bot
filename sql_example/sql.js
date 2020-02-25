@@ -21,10 +21,12 @@ connection.connect(function(err) {
 // add user sql query
 var user_id = "'1234'";
 var user_name = "'Tester'";
+var server_name = '';
+
 
 sql_add_user = 
-`INSERT INTO users (user_id, name)
-    VALUES (${user_id}, ${user_name})`;
+`INSERT IGNOR INTO users (user_id, user_name, server_name)
+    VALUES (${user_id}, ${user_name}, ${server_name})`;
 
 console.log('sql_add_user:\n' + sql_add_user);
 
