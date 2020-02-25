@@ -173,7 +173,7 @@ bot.on('message', async message => {
                         VALUES ('${question_id}', '${answer_id}', '${uid}');`;
 
                     connection.query(sql_connect_question, function (error, results, fields) {
-                    //    console.log('error: ' + error);
+                        console.log('error: ' + error);
                     //    console.log(results);
                     //    console.log(fields);
                     });
