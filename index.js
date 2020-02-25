@@ -138,12 +138,9 @@ bot.on('message', async message => {
                     `INSERT INTO questions (text)
                         VALUES ('${question}')`;
                     
-                        const sql_add_answer = 
+                    const sql_add_answer = 
                     `INSERT INTO answers (text)
                         VALUES ('${answer}')`;
-
-                        const sql_last_index = 
-                    `SELECT LAST_INSERT_ID() AS last_index`;
 
                     var question_id = null;
                     var answer_id = null;
@@ -151,23 +148,14 @@ bot.on('message', async message => {
                     //    console.log('error: ' + error);
                     //    console.log(results);
                     //    console.log(fields);
+                        question_id = results.insertId;
                     });
 
-                    connection.query(sql_last_index, function (error, results, fields) {
-                            console.log('results: ')
-                            console.log(results);
-                            console.log(results[0]['last_index']);
-                            question_id = results[0]['last_index'];
-                    });
-                    console.log(question_id);
                     connection.query(sql_add_answer, function (error, results, fields) {
                     //    console.log('error: ' + error);
                     //    console.log(results);
                     //    console.log(fields);
-                    });
-
-                    connection.query(sql_last_index, function (error, results, fields) {
-                        answer_id = results[0]['last_index'];
+                        answer_id = results.insertId;
                     });
 
                     const sql_connect_question = 
