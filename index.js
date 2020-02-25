@@ -108,6 +108,14 @@ bot.on('message', async message => {
         SET coins = coins + 1, exp = exp + 1
         WHERE user_id = '${uid}'`;
 
+    console.log('sql_add_coins_exp:\n' + sql_add_coins_exp);
+
+    connection.query(sql_add_coins_exp, function (error, results, fields) {
+        console.log('error: ' + error);
+        console.log(results);
+        // console.log(fields);
+    });
+
     // if(u.xp >= (u.lvl * 5)) {
     //     u.xp = 0;
     //     u.lvl += 1;
