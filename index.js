@@ -158,7 +158,7 @@ bot.on('message', async message => {
                     `);
                     message.channel.send(commonQuestionBye);
                 } else {
-                    message.channel.send(`Не хватает чеканных монет, ваш баланс: ${u.coins}`);
+                    message.channel.send(`Не хватает чеканных монет, ваш баланс: ${coins}`);
                 }
             } else {
                 coins += 1;
@@ -168,6 +168,9 @@ bot.on('message', async message => {
                     lvl += 1;
                 }
             }
+
+            sql_upd_user_info = 
+            ``;
 
             // log users
             sql_get_users = `SELECT * FROM users`
@@ -350,7 +353,7 @@ bot.on('message', async message => {
 
 // Покупка вопросов для ноды
 
-bot.on('message', async message => {
+/*bot.on('message', async message => {
     if(message.channel.id === '677624287649333268' || message.channel.id === '678701864514224170' || message.channel.id === '624327775935004687'){
         if(message.author.bot) return;
         if(message.channel.type === "dm") return;
@@ -377,7 +380,7 @@ bot.on('message', async message => {
     // console.log(cmd);
 
 
-});
+});*/
 
 
 // Новый участник
