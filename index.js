@@ -116,10 +116,32 @@ bot.on('message', async message => {
         // console.log(fields);
     });
 
-    // if(u.xp >= (u.lvl * 5)) {
-    //     u.xp = 0;
-    //     u.lvl += 1;
-    // }
+    sql_upd_lvl =
+    `SELECT exp, lvl FROM users
+        WHERE user_id = '${uid}'`;
+
+    connection.query(sql_upd_lvl, function (error, results, fields) {
+        console.log('error: ' + error);
+        console.log(results);
+        // console.log(fields);
+        if (results) {
+            var exp = results[0]['exp'];
+            var lvl = results[0]['lvl'];
+            if(exp >= (lvl * 5)) {
+                sql_lvl_up = 
+                `UPDATE users
+                SET lvl = lvl + 1, exp = 0
+                WHERE user_id = '${uid}'`;
+                connection.query(sql_lvl_up, function (error, results, fields) {
+                    console.log('error: ' + error);
+                    console.log(results);
+                    // console.log(fields);
+                });
+            }
+        }
+    });
+
+    
 
     // fs.writeFile('./user_lvl.json', JSON.stringify(userLvl), (err) => {
     //     if(err){
