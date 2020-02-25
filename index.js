@@ -147,37 +147,32 @@ bot.on('message', async message => {
 
                     var question_id = null;
                     var answer_id = null;
-                    connection.query(sql_add_question,
-                        function (error, results, fields) {
+                    connection.query(sql_add_question, function (error, results, fields) {
                     //    console.log('error: ' + error);
                     //    console.log(results);
                     //    console.log(fields);
                     });
 
-                    connection.query(sql_last_index,
-                        function (error, results, fields) {
+                    connection.query(sql_last_index, function (error, results, fields) {
                             console.log('results: ' + results);
-                            question_id = result[0]['last_index'];
+                            question_id = results[0]['last_index'];
                     });
 
-                    connection.query(sql_add_answer,
-                        function (error, results, fields) {
+                    connection.query(sql_add_answer, function (error, results, fields) {
                     //    console.log('error: ' + error);
                     //    console.log(results);
                     //    console.log(fields);
                     });
 
-                    connection.query(sql_last_index,
-                    function (error, results, fields) {
-                        answer_id = result[0]['last_index'];
+                    connection.query(sql_last_index, function (error, results, fields) {
+                        answer_id = results[0]['last_index'];
                     });
 
                     sql_connect_question = 
                     `INSERT INTO conn_quest_ans (question_id, answer_id, user_id)
                         VALUES ('${question_id}', '${answer_id}', '${uid}');`;
 
-                    connection.query(sql_connect_question,
-                        function (error, results, fields) {
+                    connection.query(sql_connect_question, function (error, results, fields) {
                     //    console.log('error: ' + error);
                     //    console.log(results);
                     //    console.log(fields);
