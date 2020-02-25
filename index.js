@@ -145,13 +145,6 @@ bot.on('message', async message => {
                     sql_last_index = 
                     `SELECT LAST_INSERT_ID() AS last_index`;
 
-                    connection.query(sql_add_question,
-                        function (error, results, fields) {
-                        // console.log('error: ' + error);
-                        // console.log(results);
-                        // console.log(fields);
-                    });
-
                     var question_id = null;
                     var answer_id = null;
                     connection.query(sql_add_question,
@@ -163,7 +156,7 @@ bot.on('message', async message => {
 
                     connection.query(sql_last_index,
                         function (error, results, fields) {
-                            print('results: ' + results);
+                            console.log('results: ' + results);
                             question_id = result[0]['last_index'];
                     });
 
