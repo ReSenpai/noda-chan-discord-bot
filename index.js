@@ -86,8 +86,8 @@ bot.on('message', async message => {
     // }
 
     sql_add_user = 
-    `INSERT IGNOR INTO users (user_id, user_name, server_name)
-        VALUES (${uid}, ${username}, ${nickname})`;
+    `INSERT IGNORE INTO users (user_id, user_name, server_name)
+        VALUES ('${uid}', '${username}', '${nickname}')`;
 
     console.log('sql_add_user:\n' + sql_add_user);
 
@@ -106,7 +106,7 @@ bot.on('message', async message => {
     sql_add_coins_exp = 
     `UPDATE users
         SET coins = coins + 1, exp = exp + 1
-        WHERE user_id = ${uid}`;
+        WHERE user_id = '${uid}'`;
 
     // if(u.xp >= (u.lvl * 5)) {
     //     u.xp = 0;
@@ -135,7 +135,7 @@ bot.on('message', async message => {
     
 });
 
-die("STOP")
+
 // Блок с вопросами боту
 
 bot.on('message', async message => {
