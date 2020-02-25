@@ -142,9 +142,9 @@ bot.on('message', async message => {
 
                     connection.query(sql_add_question,
                          function (error, results, fields) {
-                        // console.log('error: ' + error);
+                        console.log('error: ' + error);
                         console.log(results);
-                        // console.log(fields);
+                        console.log(fields);
                     });
 
                     const commonQuestionBye = new RichEmbed()
