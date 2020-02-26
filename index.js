@@ -24,10 +24,11 @@ const sql_connect_question =
 `INSERT INTO conn_quest_ans (question_id, answer_id, user_id)
     VALUES (?, ?, ?);`;
 
-sql_find_question = 
+const sql_find_question = 
 `SELECT questions.text AS question, answers.text as answer, 
     MATCH (questions.text) AGAINST (? IN BOOLEAN MODE) AS score 
-    FROM questions JOIN conn_quest_ans USING (question_id) 
+    FROM questions 
+    JOIN conn_quest_ans USING (question_id) 
     JOIN answers USING (answer_id) 
     ORDER BY score DESC LIMIT 100`;
 
@@ -60,9 +61,7 @@ fs.readdir('./modules/',(err,files)=>{
         console.log(`${i+1}.${f} Загружен!`);
         for(let i = 0; i < props.help.name.length; i++){
             bot.commands.set(props.help.name[i],props);
-            // console.log(props.help.name[i])
         }
-        // console.log(props.help.name);
     });
 });
 
@@ -76,147 +75,182 @@ fs.readdir('./modules/',(err,files)=>{
 // });
 
 // Конструктор прокачки профилей дискорда
-    bot.on('message', async message => {
-        try {
-            if(message.author.bot) return;
-            if(message.channel.type === "dm") return;
-        
-            const uid = message.author.id;
-            const nickname = message.member.nickname;
-            const username = message.author.username;
-        
-            bot.send = function(msg) {
-                message.channel.send(msg)
-            }
+bot.on('message', async message => {
+    try {
+        if(message.author.bot) return;
+        if(message.channel.type === "dm") return;
 
-            const connection  = mysql.createConnection({
-                host: "localhost",
-                user: "root",
-                password: "",
-                database: "mydb"
-            });
-
-            const query = util.promisify(connection.query).bind(connection);
-        
-            connection.on('error', function() {
-                console.log('Connection cancelled due to timeout or another error');
-            });
-
-            // connect to database
-            connection.connect(function(err) {
-                if (err) {
-                    console.error('DB / database connection error: ' + err.stack);
-                    return;
-                }
-                console.log('DB / connected as id ' + connection.threadId);
-            });
-
-            console.log(sql_add_user);
-
-            await query(sql_add_user, [uid, username, nickname]);
-            const user_data = await query(sql_get_user_info, [uid]);
-            console.log(user_data);
-            if (user_data) {
-                let coins = user_data[0]['coins'];
-                let exp = user_data[0]['exp'];
-                let lvl = user_data[0]['lvl'];
-                let nickname = user_data[0]['server_name'];
-                let username = user_data[0]['user_name'];
-                let question = null;
-                let answer = null;
-
-                if(/!купить вопрос$/i.test(message.content)){
-                    const shop = new RichEmbed()
-                        .setTitle(`Нода-шоп!`)
-                        .setColor(0xebe134)
-                        .setDescription(`
-                        Ваш баланс монет: ${coins}
-                        Купить общий вопрос: 25 чеканных монет
-                        Купить личный вопрос: 100 чеканных монет
-        
-                        Для покупки общего вопроса напишите: !купить общий вопрос
-                        `);
-                    message.channel.send(shop);
-                } else if(/!купить общий вопрос$/i.test(message.content)){
-                    if(coins >= 25){
-                        const commonQuestion = new RichEmbed()
-                        .setTitle(`Покупка общего вопроса.`)
-                        .setColor(0xebe134)
-                        .setDescription(`
-                        Ваш баланс монет: ${coins}
-                        Для покупки вопроса напишите или лучше скопируйте как шаблон:
-                        !вопрос [Тут пишите ваш вопрос, обязательно в квадратных скобочках] [А тут ваш ответ, так же в квадратных скобочках]
-                        `);
-                        message.channel.send(commonQuestion);
-                    } else {
-                        const commonQuestionFalse = new RichEmbed()
-                        .setTitle(`Отказано.`)
-                        .setColor(0xFF0000)
-                        .setDescription(`
-                        Не хватает чеканных монет, ваш баланс: ${coins}
-                        `);
-                        message.channel.send(commonQuestionFalse);
-                    }   
-                } else if(/!вопрос/i.test(message.content)){
-                    let args = message.content.split(" [");
-                    if (coins >= 25) {
-                        coins -= 25;
-                        question = args[1].slice(0, -1);
-                        answer = args[2].slice(0, -1);
-
-                        const commonQuestionBye = new RichEmbed()
-                        .setTitle(`Покупка оформлена.`)
-                        .setColor(0x36D904)
-                        .setDescription(`
-                        Ваш вопрос: ${question}
-                        Ваш ответ: ${answer}
-                        Осталось чеканных монет: ${coins}
-                        Приятного использования😘
-                        `);
-                        message.channel.send(commonQuestionBye);
-                    } else {
-                        message.channel.send(`Не хватает чеканных монет, ваш баланс: ${coins}`);
-                    }
-                } else if (/^Нода/i.test(message.content)) {
-                    matched_questions = await query(sql_find_question, [message.content]);
-                    if(matched_questions) {
-                        let max_score = parseFloat(matched_questions[0]['score']);
-                        let ans = '';
-                        if(max_score > 0) {
-                            ans = matched_questions[0]['answer'];
-                        } else {
-                            ans = 'сложно, сложно, нихуя не понятно.'
-                        }
-                        message.channel.send(ans);
-                    }
-                    console.log(matched_questions);
-                } else {
-                    coins += 1;
-                    exp += 1;
-                    if (exp >= lvl * 5) {
-                        exp = 0;
-                        lvl += 1;
-                    }
-                }
-                await query(sql_upd_user_info, [coins, exp, lvl, uid]);
-                if (question && answer) {
-                    var add_question = await query(sql_add_question, [question]);
-                    var question_id = add_question.insertId;
-        
-                    add_answer = await query(sql_add_answer, [answer]);
-                    var answer_id = add_answer.insertId;
-
-                    await query(sql_connect_question, [question_id, answer_id, uid]);
-                    connection.end();
-                } else {
-                    connection.end();
-                }
-            }
-        } catch (error) {
-            console.log(error);
-            if(connection) connection.end();
+        console.log('===================================================');
+    
+        const uid = message.author.id;
+        const nickname = message.member.nickname;
+        const username = message.author.username;
+    
+        bot.send = function(msg) {
+            message.channel.send(msg)
         }
-    });
+
+        // connection info
+        const connection  = mysql.createConnection({
+            host: "localhost",
+            user: "root",
+            password: "",
+            database: "mydb"
+        });
+
+        // make MySQL query async-await
+        const query = util.promisify(connection.query).bind(connection);
+    
+        // handle errors
+        connection.on('error', function() {
+            console.log('Connection cancelled due to timeout or another error');
+        });
+
+        // connect to database
+        connection.connect(function(err) {
+            if (err) {
+                console.error('DB / database connection error: ' + err.stack);
+                return;
+            }
+            console.log('DB / connected as id ' + connection.threadId);
+        });
+
+        // add user if needed
+        await query(sql_add_user, [uid, username, nickname]);
+        // get user info
+        const user_data = await query(sql_get_user_info, [uid]);
+        console.log('User Data: ');
+        console.log(user_data);
+
+        if (user_data) {
+            // User Data
+            let coins = user_data[0]['coins'];
+            let exp = user_data[0]['exp'];
+            let lvl = user_data[0]['lvl'];
+            let nickname = user_data[0]['server_name'];
+            let username = user_data[0]['user_name'];
+            let question = null;
+            let answer = null;
+
+            if(/!купить вопрос$/i.test(message.content)){
+                const shop = new RichEmbed()
+                    .setTitle(`Нода-шоп!`)
+                    .setColor(0xebe134)
+                    .setDescription(`
+                    Ваш баланс монет: ${coins}
+                    Купить общий вопрос: 25 чеканных монет
+                    Купить личный вопрос: 100 чеканных монет
+    
+                    Для покупки общего вопроса напишите: !купить общий вопрос
+                    `);
+                message.channel.send(shop);
+            } else if(/!купить общий вопрос$/i.test(message.content)){
+                if(coins >= 25){
+                    const commonQuestion = new RichEmbed()
+                    .setTitle(`Покупка общего вопроса.`)
+                    .setColor(0xebe134)
+                    .setDescription(`
+                    Ваш баланс монет: ${coins}
+                    Для покупки вопроса напишите или лучше скопируйте как шаблон:
+                    !вопрос [Тут пишите ваш вопрос, обязательно в квадратных скобочках] [А тут ваш ответ, так же в квадратных скобочках]
+                    `);
+                    message.channel.send(commonQuestion);
+                } else {
+                    const commonQuestionFalse = new RichEmbed()
+                    .setTitle(`Отказано.`)
+                    .setColor(0xFF0000)
+                    .setDescription(`
+                    Не хватает чеканных монет, ваш баланс: ${coins}
+                    `);
+                    message.channel.send(commonQuestionFalse);
+                }   
+            } else if(/!вопрос/i.test(message.content)){
+                let args = message.content.split(" [");
+                if (coins >= 25) {
+                    coins -= 25;
+                    question = args[1].slice(0, -1);
+                    answer = args[2].slice(0, -1);
+
+                    const commonQuestionBye = new RichEmbed()
+                    .setTitle(`Покупка оформлена.`)
+                    .setColor(0x36D904)
+                    .setDescription(`
+                    Ваш вопрос: ${question}
+                    Ваш ответ: ${answer}
+                    Осталось чеканных монет: ${coins}
+                    Приятного использования😘
+                    `);
+                    message.channel.send(commonQuestionBye);
+                } else {
+                    message.channel.send(`Не хватает чеканных монет, ваш баланс: ${coins}`);
+                }
+            } else {
+                // "Нода ..."
+                if (/^Нода/i.test(message.content)) {
+                    // "Нода дай монет"
+                    if (/Дай монет/i.test(message.content)) {
+                        // give 1000 coins
+                        coins += 1000;
+                    } else {
+                        // find the closes questions in DB
+                        matched_questions = await query(sql_find_question, [message.content]);
+                        // if questions exist
+                        if(matched_questions) {
+                            // maximum score to float
+                            let max_score = parseFloat(matched_questions[0]['score']);
+                            let ans = '';
+                            // if max score greater than 0
+                            if(max_score > 0) {
+                                // answer to user
+                                ans = matched_questions[0]['answer'];
+                            } else {
+                                // no similar questions in DB
+                                ans = 'сложно, сложно, нихуя не понятно.'
+                            }
+                            // answer
+                            message.channel.send(ans);
+                        }
+                        console.log('Matched questions');
+                        console.log(matched_questions);
+                    }
+                }
+                
+                // update coins, exp and lvl
+                coins += 1;
+                exp += 1;
+                if (exp >= lvl * 5) {
+                    exp = 0;
+                    lvl += 1;
+                }
+            }
+            // update user info in DB
+            await query(sql_upd_user_info, [coins, exp, lvl, uid]);
+            // if the user created a question
+            if (question && answer) {
+                // add question to table questions
+                var add_question = await query(sql_add_question, [question]);
+                var question_id = add_question.insertId;
+    
+                // add answer to table answers
+                add_answer = await query(sql_add_answer, [answer]);
+                var answer_id = add_answer.insertId;
+
+                // link added question and added answer in table conn_quest_ans
+                await query(sql_connect_question, [question_id, answer_id, uid]);
+
+                // close connection to DB
+                connection.end();
+            } else {
+                // close connection to DB
+                connection.end();
+            }
+        }
+    // handle errors
+    } catch (error) {
+        console.log(error);
+        if(connection) connection.end();
+    }
+});
 
     // if(message.channel.id === '677624287649333268' || message.channel.id === '678701864514224170' || message.channel.id === '624327775935004687') {
     //     if(/Нода дай монеток$|!монетки/i.test(message.content)){
