@@ -24,6 +24,13 @@ const sql_connect_question =
 `INSERT INTO conn_quest_ans (question_id, answer_id, user_id)
     VALUES (?, ?, ?);`;
 
+sql_find_question = 
+`SELECT questions.text AS question, answers.text as answer, 
+    MATCH (questions.text) AGAINST (? IN BOOLEAN MODE) AS score 
+    FROM questions JOIN conn_quest_ans USING (question_id) 
+    JOIN answers USING (answer_id) 
+    ORDER BY score DESC LIMIT 100`;
+
 //- require
 const Discord = require('discord.js');
 const config = require('./config.json');
@@ -171,18 +178,6 @@ fs.readdir('./modules/',(err,files)=>{
                         message.channel.send(`Не хватает чеканных монет, ваш баланс: ${coins}`);
                     }
                 } else if (/^Нода/i.test(message.content)) {
-                    // var words = message.content.split(' ').slice(1);
-                    // var regex = '(^|\\W)(';
-                    // for (let word of words) {
-                    //     regex += `${word}|`;
-                    // }
-                    // regex = regex.slice(0, -1) + ')(\\W|&)';
-                    sql_find_question = 
-                    `SELECT questions.text AS question, answers.text as answer, MATCH (questions.text) AGAINST (? IN BOOLEAN MODE)
-                    AS score FROM questions JOIN conn_quest_ans USING (question_id) JOIN answers USING (answer_id) ORDER BY score DESC LIMIT 100`;
-                    // `SELECT REGEXP_SUBSTR(text, ?) FROM questions`;
-                    // `SELECT * FROM questions
-                    //     WHERE text REGEXP ?`
                     matched_questions = await query(sql_find_question, [message.content]);
                     if(matched_questions) {
                         let max_score = parseFloat(matched_questions[0]['score']);
