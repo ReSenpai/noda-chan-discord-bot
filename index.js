@@ -32,25 +32,24 @@ const sql_find_question =
     JOIN answers USING (answer_id) 
     ORDER BY score DESC LIMIT 100`;
 
-//- require
+// require
 const Discord = require('discord.js');
 const config = require('./config.json');
 const fs = require('fs');
-const userLvl = require('./user_lvl.json');
-const answers = require('./answers.json');
 const mysql = require('mysql');
 const util = require('util');
-// const constructors = require('./functions/constructors.js');
 const { Attachment, RichEmbed, Emoji, Guild, Client } = require('discord.js');
 
-// - vars
+// bot vars
 const bot = new Discord.Client();
 bot.commands = new Discord.Collection();
 const token = config.token;
 const prefix = config.prefix;
 
+// login bot
 bot.login(token);
 
+// require modules
 fs.readdir('./modules/',(err,files)=>{
     if(err) console.log(err);
     let jsfiles = files.filter(f => f.split(".").pop() === "js");
@@ -74,18 +73,22 @@ fs.readdir('./modules/',(err,files)=>{
 //     })
 // });
 
-// Конструктор прокачки профилей дискорда
+// Handle messages
 bot.on('message', async message => {
     try {
+        // don't handle messages from bots
         if(message.author.bot) return;
+        // don't handle direct messages
         if(message.channel.type === "dm") return;
 
         console.log('===================================================');
     
+        // user info from discord
         const uid = message.author.id;
         const nickname = message.member.nickname;
         const username = message.author.username;
     
+        // unused?
         bot.send = function(msg) {
             message.channel.send(msg)
         }
@@ -115,9 +118,10 @@ bot.on('message', async message => {
             console.log('DB / connected as id ' + connection.threadId);
         });
 
-        // add user if needed
+        // add user if needed ( may not handle nick change )
         await query(sql_add_user, [uid, username, nickname]);
-        // get user info
+
+        // get user info from DB
         const user_data = await query(sql_get_user_info, [uid]);
         console.log('User Data: ');
         console.log(user_data);
@@ -214,7 +218,6 @@ bot.on('message', async message => {
                         console.log(matched_questions);
                     }
                 }
-                
                 // update coins, exp and lvl
                 coins += 1;
                 exp += 1;
@@ -223,6 +226,7 @@ bot.on('message', async message => {
                     lvl += 1;
                 }
             }
+
             // update user info in DB
             await query(sql_upd_user_info, [coins, exp, lvl, uid]);
             // if the user created a question
