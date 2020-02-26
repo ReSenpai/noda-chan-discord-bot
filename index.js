@@ -239,15 +239,18 @@ bot.on('message', async message => {
                 await query(sql_connect_question, [question_id, answer_id, uid]);
 
                 // close connection to DB
+                console.log('DB / disconnected');
                 connection.end();
             } else {
                 // close connection to DB
+                console.log('DB / disconnected');
                 connection.end();
             }
         }
     // handle errors
     } catch (error) {
         console.log(error);
+        console.log('DB / disconnected');
         if(connection) connection.end();
     }
 });
