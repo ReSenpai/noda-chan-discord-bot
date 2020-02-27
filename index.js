@@ -195,6 +195,14 @@ bot.on('message', async message => {
                     if (/Дай монет/i.test(message.content)) {
                         // give 1000 coins
                         coins += 1000;
+                        let pushCoins = new RichEmbed()
+                        .setTitle(`Запрос халявных монеток`)
+                        .setColor(0x36D904)
+                        .setDescription(`
+                        Держи 1000 монеток :moneybag:
+                        Чеканных монет: ${coins} 
+                        `);
+                        message.channel.send(pushCoins);
                     } else {
                         // find the closes questions in DB
                         matched_questions = await query(sql_find_question, [message.content]);
