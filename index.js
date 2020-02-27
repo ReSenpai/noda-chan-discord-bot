@@ -9,7 +9,7 @@ const sql_get_user_info =
 
 const sql_upd_user_info = 
 `UPDATE users
-    SET coins = ?, exp = ?, lvl = ?
+    SET coins = ?, exp = ?, lvl = ?, questions = ?
     WHERE user_id = ?`;
 
 const sql_add_question = 
@@ -133,6 +133,7 @@ bot.on('message', async message => {
             let lvl = user_data[0]['lvl'];
             let nickname = user_data[0]['server_name'];
             let username = user_data[0]['user_name'];
+            let question_num = user_data[0]['questions'];
             let question = null;
             let answer = null;
 
@@ -174,7 +175,7 @@ bot.on('message', async message => {
                     coins -= 25;
                     question = args[1].slice(0, -1);
                     answer = args[2].slice(0, -1);
-
+                    question_num += 1;
                     const commonQuestionBye = new RichEmbed()
                     .setTitle(`Покупка оформлена.`)
                     .setColor(0x36D904)
@@ -236,7 +237,7 @@ bot.on('message', async message => {
             }
 
             // update user info in DB
-            await query(sql_upd_user_info, [coins, exp, lvl, uid]);
+            await query(sql_upd_user_info, [coins, exp, lvl, question_num, uid]);
             // if the user created a question
             if (question && answer) {
                 // add question to table questions
