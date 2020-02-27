@@ -133,6 +133,7 @@ bot.on('message', async message => {
             let lvl = user_data[0]['lvl'];
             let nickname = user_data[0]['server_name'];
             let username = user_data[0]['user_name'];
+            let avatar = message.author.avatarURL;
             let question = null;
             let answer = null;
 
@@ -188,11 +189,39 @@ bot.on('message', async message => {
                 } else {
                     message.channel.send(`Не хватает чеканных монет, ваш баланс: ${coins}`);
                 }
-            } else {
+            } else if (/!профиль$|нода покажи мой профиль/i.test(message.content)) {
+                // console.log(message.member.nickname);
+                // console.log(userLvl[uid].coins);
+                // console.log(message.author)
+        
+                if(message.member.nickname === null){
+                    let embed = new RichEmbed()
+                    .setTitle(`Профиль игрока: ${username}`)
+                    .setColor(0x0a4bff)
+                    .setDescription(`
+                    :trophy:LVL: ${lvl}
+                    :jigsaw:XP: ${exp}
+                    Чеканных монет: ${coins} :moneybag:
+                    `)
+                    .setThumbnail(avatar)
+                    message.channel.send(embed);
+                } else {
+                    let embed = new RichEmbed()
+                    .setTitle(`Профиль игрока: ${nickname}`)
+                    .setColor(0x0a4bff)
+                    .setDescription(`
+                    :trophy:LVL: ${lvl}
+                    :jigsaw:XP: ${exp}
+                    :moneybag:Чеканных монет: ${coins}
+                    `)
+                    .setThumbnail(avatar)
+                    message.channel.send(embed);
+                }
+            }else {
                 // "Нода ..."
-                if (/^Нода/i.test(message.content)) {
+                if (/^Нода|^!/i.test(message.content)) {
                     // "Нода дай монет"
-                    if (/Дай монет/i.test(message.content)) {
+                    if (/Дай монет|монетки/i.test(message.content)) {
                         // give 1000 coins
                         coins += 1000;
                         let pushCoins = new RichEmbed()
