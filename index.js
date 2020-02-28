@@ -64,6 +64,12 @@ fs.readdir('./modules/',(err,files)=>{
     });
 });
 
+// Regex
+const buy_question = new RegExp(prefix + '\\купить вопрос$','i');
+const buy_common_question = new RegExp(prefix + '\\купить общий вопрос$','i');
+const just_question = new RegExp(prefix + '\\вопрос','i');
+const show_profile = new RegExp(prefix + '\\профиль$|^нода покажи мой профиль','i');
+
 // bot.on('ready', async () => {
 //     console.log(`Нода тян запущена`);
 //     bot.generateInvite(["ADMINISTRATOR"]).then(link => {
@@ -137,15 +143,9 @@ bot.on('message', async message => {
             let question_num = user_data[0]['questions'];
             let question = null;
             let answer = null;
-
-            // Regex
-            const buy_question = new RegExp(prefix + '\\купить вопрос$','i');
-            const buy_common_question = new RegExp(prefix + '\\купить общий вопрос$','i');
-            const just_question = new RegExp(prefix + '\\вопрос','i');
-            const show_profile = new RegExp(prefix + '\\профиль$|^нода покажи мой профиль','i');
             
             // System command
-            if(/нода$/i.test(message.content)){
+            if(/^нода$/i.test(message.content)){
                 let randomNumber = Math.ceil(Math.random() * 10);
                 switch(randomNumber){
                     case 1:
