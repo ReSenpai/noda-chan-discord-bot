@@ -133,11 +133,50 @@ bot.on('message', async message => {
             let lvl = user_data[0]['lvl'];
             let nickname = user_data[0]['server_name'];
             let username = user_data[0]['user_name'];
+            let avatar = message.author.avatarURL;
             let question_num = user_data[0]['questions'];
             let question = null;
             let answer = null;
 
-            if(/^!купить вопрос$/i.test(message.content)){
+            // Regex
+            const buy_question = new RegExp(prefix + '\\купить вопрос$','i');
+            const buy_common_question = new RegExp(prefix + '\\купить общий вопрос$','i');
+            const just_question = new RegExp(prefix + '\\вопрос','i');
+            const show_profile = new RegExp(prefix + '\\профиль$|^нода покажи мой профиль','i');
+            
+            // System command
+            if(/нода$/i.test(message.content)){
+                let randomNumber = Math.ceil(Math.random() * 10);
+                switch(randomNumber){
+                    case 1:
+                        message.channel.send('Шито?');
+                        break;
+                    case 2:
+                        message.channel.send('Отстань, я занята...');
+                        break;
+                    case 3:
+                        message.channel.send('Ну шо такое?');
+                        break;
+                    case 4:
+                        message.channel.send('Хватит меня звать ._.');
+                        break;
+                    case 5:
+                        message.channel.send('Ваще то моё полное имя - Нода тян');
+                        break;
+                    case 6:
+                        message.channel.send('Ась?');
+                        break;
+                    case 7:
+                        message.channel.send('Шо надо то?');
+                        break;
+                    case 8:
+                        message.channel.send('Слушаю:3');
+                        break;
+                    case 9:
+                        message.channel.send('Как банный лист пристал...');
+                        break;
+                }
+            } else if(buy_question.test(message.content)){
                 const shop = new RichEmbed()
                     .setTitle(`Нода-шоп!`)
                     .setColor(0xebe134)
@@ -149,7 +188,7 @@ bot.on('message', async message => {
                     Для покупки общего вопроса напишите: !купить общий вопрос
                     `);
                 message.channel.send(shop);
-            } else if(/^!купить общий вопрос$/i.test(message.content)){
+            } else if(buy_common_question.test(message.content)){
                 if(coins >= 25){
                     const commonQuestion = new RichEmbed()
                     .setTitle(`Покупка общего вопроса.`)
@@ -169,7 +208,7 @@ bot.on('message', async message => {
                     `);
                     message.channel.send(commonQuestionFalse);
                 }   
-            } else if(/^!вопрос/i.test(message.content)){
+            } else if(just_question.test(message.content)){
                 let args = message.content.split(" [");
                 if (coins >= 25 && args.length >= 2) {
                     coins -= 25;
@@ -194,11 +233,7 @@ bot.on('message', async message => {
                 } else {
                     message.channel.send(`Не хватает чеканных монет, ваш баланс: ${coins}`);
                 }
-            } else if (/^!профиль$|^нода покажи мой профиль$/i.test(message.content)) {
-                // console.log(message.member.nickname);
-                // console.log(userLvl[uid].coins);
-                // console.log(message.author)
-        
+            } else if (show_profile.test(message.content)) {
                 if(message.member.nickname === null){
                     let embed = new RichEmbed()
                     .setTitle(`Профиль игрока: ${username}`)
@@ -207,6 +242,7 @@ bot.on('message', async message => {
                     :trophy:LVL: ${lvl}
                     :jigsaw:XP: ${exp}
                     Чеканных монет: ${coins} :moneybag:
+                    :key:Общих вопросов куплено: ${question_num}
                     `)
                     .setThumbnail(avatar)
                     message.channel.send(embed);
@@ -218,22 +254,25 @@ bot.on('message', async message => {
                     :trophy:LVL: ${lvl}
                     :jigsaw:XP: ${exp}
                     :moneybag:Чеканных монет: ${coins}
+                    :key:Общих вопросов куплено: ${question_num}
                     `)
                     .setThumbnail(avatar)
                     message.channel.send(embed);
                 }
-            }else {
+            } else if(message.content === '!кубик') {
+                message.channel.send(Math.ceil(Math.random() * 10)); 
+            } else {
                 // "Нода ..."
                 if (/^Нода|^!/i.test(message.content)) {
                     // "Нода дай монет"
                     if (/Дай монет|монетки/i.test(message.content)) {
-                        // give 1000 coins
-                        coins += 1000;
+                        // give 100 coins
+                        coins += 99;
                         let pushCoins = new RichEmbed()
                         .setTitle(`Запрос халявных монеток`)
                         .setColor(0x36D904)
                         .setDescription(`
-                        Держи 1000 монеток :moneybag:
+                        Держи 100 монеток :moneybag:
                         Чеканных монет: ${coins} 
                         `);
                         message.channel.send(pushCoins);
@@ -252,7 +291,24 @@ bot.on('message', async message => {
                                 ans = matched_questions[0]['answer'];
                             } else {
                                 // no similar questions in DB
-                                ans = 'сложно, сложно, нихуя не понятно.'
+                                let randomNumber = Math.ceil(Math.random() * 5);
+                                switch(randomNumber){
+                                    case 1:
+                                        ans = 'Cложно, сложно, ни**я не понятно.';
+                                        break;
+                                    case 2:
+                                        ans = 'Чееего *лять?';
+                                        break;
+                                    case 3:
+                                        ans = 'Ни**я не поняла, но очень интересно:3';
+                                        break;
+                                    case 4:
+                                        ans = 'Чот я ничего не поняла';
+                                        break;
+                                    case 5:
+                                        ans = 'А можно помедленее? Я записываю...';
+                                        break;
+                                }
                             }
                             // answer
                             message.channel.send(ans);
@@ -302,135 +358,6 @@ bot.on('message', async message => {
     }
 });
 
-    // if(message.channel.id === '677624287649333268' || message.channel.id === '678701864514224170' || message.channel.id === '624327775935004687') {
-    //     if(/Нода дай монеток$|!монетки/i.test(message.content)){
-    //         u.coins += 100;
-    //         let pushCoins = new RichEmbed()
-    //         .setTitle(`Запрос халявных монеток`)
-    //         .setColor(0x36D904)
-    //         .setDescription(`
-    //         Держи 100 монеток :moneybag:
-    //         Чеканных монет: ${userLvl[uid].coins} 
-    //         `);
-    //         message.channel.send(pushCoins);
-    //     }
-    // }
-
-
-// Блок с вопросами боту
-
-/*bot.on('message', async message => {
-
-    if(message.author.bot) return;
-
-    bot.userlvl
-
-    if(message.channel.id === '677624287649333268' || message.channel.id === '678701864514224170' || message.channel.id === '624327775935004687'){
-        if (/Нода$/i.test(message.content)) {
-            if(message.author.id === '206808155890384898'){
-                message.channel.send('Слушаю вас о божество');
-            } else if(message.author.id === '124548144133308416') {
-                message.channel.send('Да, ваше благородие?:3');
-            } else {
-                let randomNumber = Math.ceil(Math.random() * 10);
-                switch(randomNumber){
-                    case 1:
-                        message.channel.send('Шито?');
-                        break;
-                    case 2:
-                        message.channel.send('Отстань, я занята...');
-                        break;
-                    case 3:
-                        message.channel.send('Ну шо такое?');
-                        break;
-                    case 4:
-                        message.channel.send('Хватит меня звать ._.');
-                        break;
-                    case 5:
-                        message.channel.send('Ваще то моё полное имя - Нода тян');
-                        break;
-                    case 6:
-                        message.channel.send('Ась?');
-                        break;
-                    case 7:
-                        message.channel.send('Шо надо то?');
-                        break;
-                    case 8:
-                        message.channel.send('Слушаю:3');
-                        break;
-                    case 9:
-                        message.channel.send('Как банный лист пристал...');
-                        break;
-                }
-            }
-        }
-        if (message.content === 'Нода тян'){
-            message.channel.send('Ты просишь, но просишь без уважения:3')
-        }
-        if (message.content == 'От сушка') {
-            message.channel.send('Бан!! ._.')
-        }
-        if (message.content === 'Нода привет') {
-            message.channel.send('Здрасьте:3');
-        }
-        if (message.content === '!кубик') {
-            message.channel.send(Math.ceil(Math.random() * 10));
-        }
-        if (message.content === 'Нода попращайся') {
-            message.channel.send('До новых встре:3');
-        }
-        
-        if (/!профиль$|нода покажи мой профиль/i.test(message.content)) {
-            const uid = message.author.id;
-            userLvl[uid].coins -= 1;
-            const coinsIcon = new Attachment('./Gold_coin_icon.png');
-    
-            // console.log(message.member.nickname);
-            // console.log(userLvl[uid].coins);
-            // console.log(message.author)
-    
-            if(message.member.nickname === null){
-                let embed = new RichEmbed()
-                .setTitle(`Профиль игрока: ${message.author.username}`)
-                .setColor(0x0a4bff)
-                .setDescription(`
-                :trophy:LVL: ${userLvl[uid].lvl}
-                :jigsaw:XP: ${userLvl[uid].xp}
-                Чеканных монет: ${userLvl[uid].coins} :moneybag:
-                Общих вопросов куплено: ${answers[uid].answer.length}`)
-                .setThumbnail(message.author.avatarURL)
-                message.channel.send(embed);
-            } else {
-                let embed = new RichEmbed()
-                .setTitle(`Профиль игрока: ${message.member.nickname}`)
-                .setColor(0x0a4bff)
-                .setDescription(`
-                :trophy:LVL: ${userLvl[uid].lvl}
-                :jigsaw:XP: ${userLvl[uid].xp}
-                :moneybag:Чеканных монет: ${userLvl[uid].coins}
-                :key:Общих вопросов куплено: ${answers[uid].answer.length}`)
-                .setThumbnail(message.author.avatarURL)
-                message.channel.send(embed);
-            }
-        }
-    
-        for (var id in answers) {
-            let counter = -1;
-    
-            for (var key in answers[id].question) {
-                counter += 1;
-                if(message.content === answers[id].question[counter]){
-                    message.channel.send(answers[id].answer[counter])
-                }
-                // console.log(answers[id].question[counter])
-            }
-            
-        }
-    }
-
-    
-});*/
-
 
 // Новый участник
 
@@ -440,13 +367,4 @@ bot.on('message', async message => {
 //     if (!channel) return;
 //     channel.send(`Добро пожаловать на сервер, ${member}`);
 // });
-
-
-// Тестирование
-
-
-
-// bot.on('emojiCreate', async Emoji => {
-//     console.log(Emoji);
-// })
 
