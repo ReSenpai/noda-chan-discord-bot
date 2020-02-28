@@ -143,7 +143,8 @@ bot.on('message', async message => {
             const buy_common_question = new RegExp(prefix + '\\купить общий вопрос$','i');
             const just_question = new RegExp(prefix + '\\вопрос','i');
             const show_profile = new RegExp(prefix + '\\профиль$|^нода покажи мой профиль','i');
-
+            
+            // System command
             if(/нода$/i.test(message.content)){
                 let randomNumber = Math.ceil(Math.random() * 10);
                 switch(randomNumber){
@@ -352,121 +353,6 @@ bot.on('message', async message => {
 });
 
 
-// Блок с вопросами боту
-
-/*bot.on('message', async message => {
-
-    if(message.author.bot) return;
-
-    bot.userlvl
-
-    if(message.channel.id === '677624287649333268' || message.channel.id === '678701864514224170' || message.channel.id === '624327775935004687'){
-        if (/Нода$/i.test(message.content)) {
-            if(message.author.id === '206808155890384898'){
-                message.channel.send('Слушаю вас о божество');
-            } else if(message.author.id === '124548144133308416') {
-                message.channel.send('Да, ваше благородие?:3');
-            } else {
-                let randomNumber = Math.ceil(Math.random() * 10);
-                switch(randomNumber){
-                    case 1:
-                        message.channel.send('Шито?');
-                        break;
-                    case 2:
-                        message.channel.send('Отстань, я занята...');
-                        break;
-                    case 3:
-                        message.channel.send('Ну шо такое?');
-                        break;
-                    case 4:
-                        message.channel.send('Хватит меня звать ._.');
-                        break;
-                    case 5:
-                        message.channel.send('Ваще то моё полное имя - Нода тян');
-                        break;
-                    case 6:
-                        message.channel.send('Ась?');
-                        break;
-                    case 7:
-                        message.channel.send('Шо надо то?');
-                        break;
-                    case 8:
-                        message.channel.send('Слушаю:3');
-                        break;
-                    case 9:
-                        message.channel.send('Как банный лист пристал...');
-                        break;
-                }
-            }
-        }
-        if (message.content === 'Нода тян'){
-            message.channel.send('Ты просишь, но просишь без уважения:3')
-        }
-        if (message.content == 'От сушка') {
-            message.channel.send('Бан!! ._.')
-        }
-        if (message.content === 'Нода привет') {
-            message.channel.send('Здрасьте:3');
-        }
-        if (message.content === '!кубик') {
-            message.channel.send(Math.ceil(Math.random() * 10));
-        }
-        if (message.content === 'Нода попращайся') {
-            message.channel.send('До новых встре:3');
-        }
-        
-        if (/!профиль$|нода покажи мой профиль/i.test(message.content)) {
-            const uid = message.author.id;
-            userLvl[uid].coins -= 1;
-            const coinsIcon = new Attachment('./Gold_coin_icon.png');
-    
-            // console.log(message.member.nickname);
-            // console.log(userLvl[uid].coins);
-            // console.log(message.author)
-    
-            if(message.member.nickname === null){
-                let embed = new RichEmbed()
-                .setTitle(`Профиль игрока: ${message.author.username}`)
-                .setColor(0x0a4bff)
-                .setDescription(`
-                :trophy:LVL: ${userLvl[uid].lvl}
-                :jigsaw:XP: ${userLvl[uid].xp}
-                Чеканных монет: ${userLvl[uid].coins} :moneybag:
-                Общих вопросов куплено: ${answers[uid].answer.length}`)
-                .setThumbnail(message.author.avatarURL)
-                message.channel.send(embed);
-            } else {
-                let embed = new RichEmbed()
-                .setTitle(`Профиль игрока: ${message.member.nickname}`)
-                .setColor(0x0a4bff)
-                .setDescription(`
-                :trophy:LVL: ${userLvl[uid].lvl}
-                :jigsaw:XP: ${userLvl[uid].xp}
-                :moneybag:Чеканных монет: ${userLvl[uid].coins}
-                :key:Общих вопросов куплено: ${answers[uid].answer.length}`)
-                .setThumbnail(message.author.avatarURL)
-                message.channel.send(embed);
-            }
-        }
-    
-        for (var id in answers) {
-            let counter = -1;
-    
-            for (var key in answers[id].question) {
-                counter += 1;
-                if(message.content === answers[id].question[counter]){
-                    message.channel.send(answers[id].answer[counter])
-                }
-                // console.log(answers[id].question[counter])
-            }
-            
-        }
-    }
-
-    
-});*/
-
-
 // Новый участник
 
 // bot.on('guildMemberAdd', member => {
@@ -475,13 +361,4 @@ bot.on('message', async message => {
 //     if (!channel) return;
 //     channel.send(`Добро пожаловать на сервер, ${member}`);
 // });
-
-
-// Тестирование
-
-
-
-// bot.on('emojiCreate', async Emoji => {
-//     console.log(Emoji);
-// })
 
