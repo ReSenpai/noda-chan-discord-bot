@@ -21,11 +21,11 @@ const sql_add_answer =
     VALUES (?)`;
 
 const sql_connect_question = 
-`INSERT INTO conn_quest_ans (question_id, answer_id, user_id)
-    VALUES (?, ?, ?);`;
+`INSERT INTO conn_quest_ans (question_id, answer_id, user_id, type)
+    VALUES (?, ?, ?, ?);`;
 
 const sql_find_question = 
-`SELECT questions.text AS question, answers.text as answer, 
+`SELECT questions.text AS question, answers.text AS answer, type, 
     MATCH (questions.text) AGAINST (? IN BOOLEAN MODE) AS score 
     FROM questions 
     JOIN conn_quest_ans USING (question_id) 
@@ -97,7 +97,7 @@ bot.on('message', async message => {
         const connection  = mysql.createConnection({
             host: "localhost",
             user: "root",
-            password: "",
+            password: "password",
             database: "mydb"
         });
 
@@ -137,7 +137,7 @@ bot.on('message', async message => {
             let question = null;
             let answer = null;
 
-            if(/!купить вопрос$/i.test(message.content)){
+            if(/^!купить вопрос$/i.test(message.content)){
                 const shop = new RichEmbed()
                     .setTitle(`Нода-шоп!`)
                     .setColor(0xebe134)
@@ -149,7 +149,7 @@ bot.on('message', async message => {
                     Для покупки общего вопроса напишите: !купить общий вопрос
                     `);
                 message.channel.send(shop);
-            } else if(/!купить общий вопрос$/i.test(message.content)){
+            } else if(/^!купить общий вопрос$/i.test(message.content)){
                 if(coins >= 25){
                     const commonQuestion = new RichEmbed()
                     .setTitle(`Покупка общего вопроса.`)
@@ -169,12 +169,17 @@ bot.on('message', async message => {
                     `);
                     message.channel.send(commonQuestionFalse);
                 }   
-            } else if(/!вопрос/i.test(message.content)){
+            } else if(/^!вопрос/i.test(message.content)){
                 let args = message.content.split(" [");
-                if (coins >= 25) {
+                if (coins >= 25 && args.length >= 2) {
                     coins -= 25;
                     question = args[1].slice(0, -1);
                     answer = args[2].slice(0, -1);
+                    try {
+                        question_type = parseInt(args[3].slice(0, -1));
+                    } catch (error) {
+                        question_type = 0;
+                    }
                     question_num += 1;
                     const commonQuestionBye = new RichEmbed()
                     .setTitle(`Покупка оформлена.`)
@@ -189,7 +194,7 @@ bot.on('message', async message => {
                 } else {
                     message.channel.send(`Не хватает чеканных монет, ваш баланс: ${coins}`);
                 }
-            } else if (/!профиль$|нода покажи мой профиль/i.test(message.content)) {
+            } else if (/^!профиль$|^нода покажи мой профиль$/i.test(message.content)) {
                 // console.log(message.member.nickname);
                 // console.log(userLvl[uid].coins);
                 // console.log(message.author)
@@ -237,6 +242,7 @@ bot.on('message', async message => {
                         matched_questions = await query(sql_find_question, [message.content]);
                         // if questions exist
                         if(matched_questions) {
+                            console.log('question_type :' + matched_questions[0]['type']);
                             // maximum score to float
                             let max_score = parseFloat(matched_questions[0]['score']);
                             let ans = '';
@@ -277,7 +283,7 @@ bot.on('message', async message => {
                 var answer_id = add_answer.insertId;
 
                 // link added question and added answer in table conn_quest_ans
-                await query(sql_connect_question, [question_id, answer_id, uid]);
+                await query(sql_connect_question, [question_id, answer_id, uid, question_type]);
 
                 // close connection to DB
                 console.log('DB / disconnected');
