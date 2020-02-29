@@ -85,13 +85,19 @@ bot.on('message', async message => {
         // don't handle messages from bots
         if(message.author.bot) return;
         // don't handle direct messages
-        if(message.channel.type === "dm") return;
+        // if(message.channel.type === "dm") return;
 
         console.log('===================================================');
     
         // user info from discord
         const uid = message.author.id;
-        const nickname = message.member.nickname;
+        let nickname = '';
+        try {
+            nickname = message.member.nickname;
+        } catch (error) {
+            nickname = 'whisperer';
+        }
+        
         const username = message.author.username;
     
         // unused?
@@ -103,7 +109,7 @@ bot.on('message', async message => {
         const connection  = mysql.createConnection({
             host: "localhost",
             user: "root",
-            password: "password",
+            password: "",
             database: "mydb"
         });
 
