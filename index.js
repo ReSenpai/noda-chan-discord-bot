@@ -79,7 +79,7 @@ bot.on('message', async message => {
         // don't handle messages from bots
         if(message.author.bot) return;
         // don't handle direct messages
-        if(message.channel.type === "dm") return;
+        // if(message.channel.type === "dm") return;
 
         console.log('===================================================');
     
