@@ -21,11 +21,11 @@ const sql_add_answer =
     VALUES (?)`;
 
 const sql_connect_question = 
-`INSERT INTO conn_quest_ans (question_id, answer_id, user_id)
-    VALUES (?, ?, ?);`;
+`INSERT INTO conn_quest_ans (question_id, answer_id, user_id, type)
+    VALUES (?, ?, ?, ?);`;
 
 const sql_find_question = 
-`SELECT questions.text AS question, answers.text as answer, 
+`SELECT questions.text AS question, answers.text AS answer, type, 
     MATCH (questions.text) AGAINST (? IN BOOLEAN MODE) AS score 
     FROM questions 
     JOIN conn_quest_ans USING (question_id) 
@@ -64,6 +64,12 @@ fs.readdir('./modules/',(err,files)=>{
     });
 });
 
+// Regex
+const buy_question = new RegExp(prefix + '\\купить вопрос$','i');
+const buy_common_question = new RegExp(prefix + '\\купить общий вопрос$','i');
+const just_question = new RegExp(prefix + '\\вопрос','i');
+const show_profile = new RegExp(prefix + '\\профиль$|^нода покажи мой профиль','i');
+
 // bot.on('ready', async () => {
 //     console.log(`Нода тян запущена`);
 //     bot.generateInvite(["ADMINISTRATOR"]).then(link => {
@@ -85,7 +91,13 @@ bot.on('message', async message => {
     
         // user info from discord
         const uid = message.author.id;
-        const nickname = message.member.nickname;
+        let nickname = '';
+        try {
+            nickname = message.member.nickname;
+        } catch (error) {
+            nickname = 'whisperer';
+        }
+        
         const username = message.author.username;
     
         // unused?
@@ -137,15 +149,9 @@ bot.on('message', async message => {
             let question_num = user_data[0]['questions'];
             let question = null;
             let answer = null;
-
-            // Regex
-            const buy_question = new RegExp(prefix + '\\купить вопрос$','i');
-            const buy_common_question = new RegExp(prefix + '\\купить общий вопрос$','i');
-            const just_question = new RegExp(prefix + '\\вопрос','i');
-            const show_profile = new RegExp(prefix + '\\профиль$|^нода покажи мой профиль','i');
             
             // System command
-            if(/нода$/i.test(message.content)){
+            if(/^нода$/i.test(message.content)){
                 let randomNumber = Math.ceil(Math.random() * 10);
                 switch(randomNumber){
                     case 1:
@@ -210,10 +216,15 @@ bot.on('message', async message => {
                 }   
             } else if(just_question.test(message.content)){
                 let args = message.content.split(" [");
-                if (coins >= 25) {
+                if (coins >= 25 && args.length >= 2) {
                     coins -= 25;
                     question = args[1].slice(0, -1);
                     answer = args[2].slice(0, -1);
+                    try {
+                        question_type = parseInt(args[3].slice(0, -1));
+                    } catch (error) {
+                        question_type = 0;
+                    }
                     question_num += 1;
                     const commonQuestionBye = new RichEmbed()
                     .setTitle(`Покупка оформлена.`)
@@ -276,6 +287,7 @@ bot.on('message', async message => {
                         matched_questions = await query(sql_find_question, [message.content]);
                         // if questions exist
                         if(matched_questions) {
+                            console.log('question_type :' + matched_questions[0]['type']);
                             // maximum score to float
                             let max_score = parseFloat(matched_questions[0]['score']);
                             let ans = '';
@@ -333,7 +345,7 @@ bot.on('message', async message => {
                 var answer_id = add_answer.insertId;
 
                 // link added question and added answer in table conn_quest_ans
-                await query(sql_connect_question, [question_id, answer_id, uid]);
+                await query(sql_connect_question, [question_id, answer_id, uid, question_type]);
 
                 // close connection to DB
                 console.log('DB / disconnected');
