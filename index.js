@@ -123,7 +123,7 @@ bot.on('message', async message => {
             host:       config.DB.host,
             user:       config.DB.user,
             password:   config.DB.password,
-            database:   config.DB.host.database
+            database:   config.DB.database
         });
 
         // make MySQL query async-await
