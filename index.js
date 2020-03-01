@@ -359,8 +359,11 @@ bot.on('message', async message => {
     // handle errors
     } catch (error) {
         console.log(error);
-        console.log('DB / disconnected');
-        if(connection) connection.end();
+        if(connection) {
+            console.log('DB / disconnected');
+            connection.end();
+        }
+         
     }
 });
 
