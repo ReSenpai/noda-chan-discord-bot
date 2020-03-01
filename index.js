@@ -120,10 +120,10 @@ bot.on('message', async message => {
 
         // connection info
         const connection  = mysql.createConnection({
-            host: "localhost",
-            user: "root",
-            password: "password",
-            database: "mydb"
+            host:       config.DB.host,
+            user:       config.DB.user,
+            password:   config.DB.password,
+            database:   config.DB.host.database
         });
 
         // make MySQL query async-await
