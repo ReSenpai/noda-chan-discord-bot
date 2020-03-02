@@ -6,7 +6,9 @@ const sql_add_user =
 const sql_get_user_info =
 `SELECT * FROM users
     WHERE user_id = ?`;
-
+const sql_get_conn_quest_ans_info =
+`SELECT * FROM conn_quest_ans
+    WHERE user_id = ?`;
 const sql_upd_user_info = 
 `UPDATE users
     SET coins = ?, exp = ?, lvl = ?, questions = ?
@@ -66,10 +68,12 @@ fs.readdir('./modules/',(err,files)=>{
 
 // Regex
 const buy_question = new RegExp(prefix + '\\купить вопрос$','i');
-const buy_common_question = new RegExp(prefix + '\\купить общий вопрос$','i');
+const buy_common_question = new RegExp(prefix + '\\общий вопрос$','i');
+const buy_personal_question = new RegExp(prefix + '\\личный вопрос$','i');
 const just_question = new RegExp(prefix + '\\вопрос','i');
 const show_profile = new RegExp(prefix + '\\профиль$|^нода покажи мой профиль','i');
 const personal_question = /^личный$/i;
+const common_question = /^общий$/i;
 
 // bot.on('ready', async () => {
 //     console.log(`Нода тян запущена`);
@@ -196,6 +200,7 @@ bot.on('message', async message => {
                         message.channel.send('Как банный лист пристал...');
                         break;
                 }
+                // Bye questions guide
             } else if(buy_question.test(message.content)){
                 const shop = new RichEmbed()
                     .setTitle(`Нода-шоп!`)
@@ -205,9 +210,11 @@ bot.on('message', async message => {
                     Купить общий вопрос: 25 чеканных монет
                     Купить личный вопрос: 100 чеканных монет
     
-                    Для покупки общего вопроса напишите: !купить общий вопрос
+                    Для покупки общего вопроса напишите: !общий вопрос
+                    Для покупки личного вопроса напишите: !личный вопрос
                     `);
                 message.channel.send(shop);
+                // Bye common_questions guide
             } else if(buy_common_question.test(message.content)){
                 if(coins >= 25){
                     const commonQuestion = new RichEmbed()
@@ -227,34 +234,66 @@ bot.on('message', async message => {
                     Не хватает чеканных монет, ваш баланс: ${coins}
                     `);
                     message.channel.send(commonQuestionFalse);
-                }   
+                }  
+                // Bye personal_question guide 
+            } else if(buy_personal_question.test(message.content)){
+                if(coins >= 100){
+                    let plate = new RichEmbed()
+                    .setTitle(`Покупка личного вопроса.`)
+                    .setColor(0xebe134)
+                    .setDescription(`
+                    Ваш баланс монет: ${coins}
+                    Для покупки вопроса напишите или лучше скопируйте как шаблон:
+                    !вопрос [Тут пишите ваш вопрос, обязательно в квадратных скобочках] [А тут ваш ответ, так же в квадратных скобочках] [личный]
+                    `);
+                    message.channel.send(plate);
+                } else {
+                    let plate_false = new RichEmbed()
+                    .setTitle(`Отказано.`)
+                    .setColor(0xFF0000)
+                    .setDescription(`
+                    Не хватает чеканных монет, ваш баланс: ${coins}
+                    `);
+                    message.channel.send(plate_false);
+                }  
+                // Bye questions code
             } else if(just_question.test(message.content)){
                 let args = message.content.split(" [");
                 if (coins >= 25 && args.length >= 2) {
                     question = args[1].slice(0, -1);
                     answer = args[2].slice(0, -1);
                     try {
-                        question_type = parseInt(args[3].slice(0, -1));
-                    } catch (error) {
+                        question_type = args[3].slice(0, -1);
+                    } catch(error) {
                         question_type = 0;
                     }
-                    // if(question_type.test(personal_question)){
-                    //     question_type = 1;
-                    // } else if(question_type === 0){
-                    //     question_type = 0
-                    // } else {
-                    //     let plate = new RichEmbed()
-                    //     .setTitle(`Ошибка`)
-                    //     .setColor(0xFF0000)
-                    //     .setDescription(`
-                    //     Вы неправильно указали тип вопроса.
-                    //     Для покупки личного вопроса, в конце оформления покупки обычного вопроса допишите [личный].
-                    //     Для покупки общего вопроса можно вообще не писать тип вопроса.
-                    //     `)
-                    //     bot.send(plate);
-                    //     return;
-                    // }
-                    coins -= 25;
+                    console.log(question);
+                    console.log(question_type);
+                    if(personal_question.test(question_type)){
+                        if(coins >= 100) {
+                            question_type = 1;
+                            coins -= 100;
+                            console.log(question_type);
+                        } else {
+                            bot.send(`Не хватает чеканных монет для покупки личного вопроса.\nВаш баланс: ${coins} монет!`)
+                            return;
+                        }
+                    } else if(question_type === 0 || common_question.test(question_type)){
+                        question_type = 0;
+                        coins -= 25;
+                        console.log(question_type);
+                    } else {
+                        let plate = new RichEmbed()
+                        .setTitle(`Ошибка`)
+                        .setColor(0xFF0000)
+                        .setDescription(`
+                        Вы неправильно указали тип вопроса.
+                        Для покупки личного вопроса, в конце оформления покупки обычного вопроса допишите [личный].
+                        Для покупки общего вопроса можно вообще не писать тип вопроса или напишите [общий]
+                        `)
+                        bot.send(plate);
+                        return;
+                    }
                     question_num += 1;
                     const commonQuestionBye = new RichEmbed()
                     .setTitle(`Покупка оформлена.`)
@@ -262,13 +301,15 @@ bot.on('message', async message => {
                     .setDescription(`
                     Ваш вопрос: ${question}
                     Ваш ответ: ${answer}
+                    Тип вопроса: ${question_type === 0 ? 'общий' : 'личный'}
                     Осталось чеканных монет: ${coins}
                     Приятного использования😘
                     `);
                     message.channel.send(commonQuestionBye);
                 } else {
-                    message.channel.send(`Не хватает чеканных монет, ваш баланс: ${coins}`);
+                    message.channel.send(`${args.length >= 2 ? 'Не хватает чеканных монет, ваш баланс:' + coins : 'Вы неправильно написали шаблон для покупки вопроса, можете посмотреть правильные шаблоны, написав "!купить общий вопрос" или "!купить личный вопрос"'}`);
                 }
+                // Show profiles
             } else if (show_profile.test(message.content)) {
                 if(message.member.nickname === null){
                     let embed = new RichEmbed()
@@ -295,6 +336,7 @@ bot.on('message', async message => {
                     .setThumbnail(avatar)
                     message.channel.send(embed);
                 }
+                // Throw a cube
             } else if(message.content === '!кубик') {
                 message.channel.send(Math.ceil(Math.random() * 10)); 
             } else {
@@ -315,16 +357,34 @@ bot.on('message', async message => {
                     } else {
                         // find the closes questions in DB
                         matched_questions = await query(sql_find_question, [stemming(message.content)]);
+                        personal_question_check = await query(sql_get_conn_quest_ans_info, [uid]);
+                        let check_id = 0;
+                        try {
+                            check_id = personal_question_check[0]['user_id'];
+                        } catch(error) {
+                            check_id = 0;
+                        }
+                        console.log(personal_question_check);
+                        console.log(`user id = ${check_id}`);
+                        console.log(uid == check_id);
                         // if questions exist
                         if(matched_questions) {
                             console.log('question_type :' + matched_questions[0]['type']);
                             // maximum score to float
+                            let type = matched_questions[0]['type'];
                             let max_score = parseFloat(matched_questions[0]['score']);
                             let ans = '';
                             // if max score greater than 0
                             if(max_score > 0) {
-                                // answer to user
-                                ans = matched_questions[0]['answer'];
+                                if(type === 1) {
+                                   if(uid == check_id) {
+                                        ans = matched_questions[0]['answer'];    
+                                   } else {
+                                        ans = matched_questions[0]['answer'];
+                                   }
+                                } else {
+                                    ans = matched_questions[0]['answer'];
+                                }       
                             } else {
                                 // no similar questions in DB
                                 let randomNumber = Math.ceil(Math.random() * 5);
