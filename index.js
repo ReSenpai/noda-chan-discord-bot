@@ -69,6 +69,7 @@ const buy_question = new RegExp(prefix + '\\купить вопрос$','i');
 const buy_common_question = new RegExp(prefix + '\\купить общий вопрос$','i');
 const just_question = new RegExp(prefix + '\\вопрос','i');
 const show_profile = new RegExp(prefix + '\\профиль$|^нода покажи мой профиль','i');
+const personal_question = /^личный$/i;
 
 // bot.on('ready', async () => {
 //     console.log(`Нода тян запущена`);
@@ -217,7 +218,6 @@ bot.on('message', async message => {
             } else if(just_question.test(message.content)){
                 let args = message.content.split(" [");
                 if (coins >= 25 && args.length >= 2) {
-                    coins -= 25;
                     question = args[1].slice(0, -1);
                     answer = args[2].slice(0, -1);
                     try {
@@ -225,6 +225,23 @@ bot.on('message', async message => {
                     } catch (error) {
                         question_type = 0;
                     }
+                    // if(question_type.test(personal_question)){
+                    //     question_type = 1;
+                    // } else if(question_type === 0){
+                    //     question_type = 0
+                    // } else {
+                    //     let plate = new RichEmbed()
+                    //     .setTitle(`Ошибка`)
+                    //     .setColor(0xFF0000)
+                    //     .setDescription(`
+                    //     Вы неправильно указали тип вопроса.
+                    //     Для покупки личного вопроса, в конце оформления покупки обычного вопроса допишите [личный].
+                    //     Для покупки общего вопроса можно вообще не писать тип вопроса.
+                    //     `)
+                    //     bot.send(plate);
+                    //     return;
+                    // }
+                    coins -= 25;
                     question_num += 1;
                     const commonQuestionBye = new RichEmbed()
                     .setTitle(`Покупка оформлена.`)
@@ -273,7 +290,7 @@ bot.on('message', async message => {
                     // "Нода дай монет"
                     if (/Дай монет|монетки/i.test(message.content)) {
                         // give 100 coins
-                        coins += 99;
+                        coins += 100;
                         let pushCoins = new RichEmbed()
                         .setTitle(`Запрос халявных монеток`)
                         .setColor(0x36D904)
