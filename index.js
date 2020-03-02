@@ -80,6 +80,19 @@ const personal_question = /^личный$/i;
 //     })
 // });
 
+// stemming
+// npm i natural
+var natural = require('natural');
+var tokenizer = new natural.WordTokenizer();
+function stemming(str) {
+    let words = tokenizer.tokenize(str);
+    let stems = [];
+    for (word of words) {
+        stems.push(natural.PorterStemmerRu.stem(word));
+    }
+    return stems.join(' ');
+}
+
 // Handle messages
 bot.on('message', async message => {
     try {
@@ -108,10 +121,10 @@ bot.on('message', async message => {
 
         // connection info
         const connection  = mysql.createConnection({
-            host: "localhost",
-            user: "root",
-            password: "",
-            database: "mydb"
+            host:       config.DB.host,
+            user:       config.DB.user,
+            password:   config.DB.password,
+            database:   config.DB.database
         });
 
         // make MySQL query async-await
@@ -301,7 +314,7 @@ bot.on('message', async message => {
                         message.channel.send(pushCoins);
                     } else {
                         // find the closes questions in DB
-                        matched_questions = await query(sql_find_question, [message.content]);
+                        matched_questions = await query(sql_find_question, [stemming(message.content)]);
                         // if questions exist
                         if(matched_questions) {
                             console.log('question_type :' + matched_questions[0]['type']);
@@ -354,7 +367,7 @@ bot.on('message', async message => {
             // if the user created a question
             if (question && answer) {
                 // add question to table questions
-                var add_question = await query(sql_add_question, [question]);
+                var add_question = await query(sql_add_question, [stemming(question)]);
                 var question_id = add_question.insertId;
     
                 // add answer to table answers
@@ -376,8 +389,11 @@ bot.on('message', async message => {
     // handle errors
     } catch (error) {
         console.log(error);
-        console.log('DB / disconnected');
-        if(connection) connection.end();
+        if(connection) {
+            console.log('DB / disconnected');
+            connection.end();
+        }
+         
     }
 });
 
