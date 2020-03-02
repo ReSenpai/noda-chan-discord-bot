@@ -79,7 +79,7 @@ const show_profile = new RegExp(prefix + '\\профиль$|^нода покаж
 //     })
 // });
 
-// stemming
+// russian stemming
 // npm i natural
 var natural = require('natural');
 var tokenizer = new natural.WordTokenizer();
@@ -89,7 +89,9 @@ function stemming(str) {
     for (word of words) {
         stems.push(natural.PorterStemmerRu.stem(word));
     }
-    return stems.join(' ');
+    str_stemmed = stems.join(' ')
+    console.log(`stemmed: ${str_stemmed}`);
+    return str_stemmed;
 }
 
 // Handle messages
