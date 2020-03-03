@@ -459,7 +459,7 @@ bot.on('message', async message => {
                                         break;
                                 }
                             }
-                            console.log(`Noda / MSG / HM / QN / Return the chosen answer`);
+                            console.log(`Noda / MSG / HM / QN / Сhosen answer: ${ans}`);
                             // answer
                             message.channel.send(ans);
                         }
