@@ -202,7 +202,7 @@ bot.on('message', async message => {
                         message.channel.send('Как банный лист пристал...');
                         break;
                 }
-                // Bye questions guide
+                // Buy questions guide
             } else if(buy_question.test(message.content)){
                 const shop = new RichEmbed()
                     .setTitle(`Нода-шоп!`)
@@ -216,7 +216,7 @@ bot.on('message', async message => {
                     Для покупки личного вопроса напишите: !личный вопрос
                     `);
                 message.channel.send(shop);
-                // Bye common_questions guide
+                // Buy common_questions guide
             } else if(buy_common_question.test(message.content)){
                 if(coins >= 25){
                     const commonQuestion = new RichEmbed()
@@ -237,7 +237,7 @@ bot.on('message', async message => {
                     `);
                     message.channel.send(commonQuestionFalse);
                 }  
-                // Bye personal_question guide 
+                // Buy personal_question guide 
             } else if(buy_personal_question.test(message.content)){
                 if(coins >= 100){
                     let plate = new RichEmbed()
@@ -258,7 +258,7 @@ bot.on('message', async message => {
                     `);
                     message.channel.send(plate_false);
                 }  
-                // Bye questions code
+                // Buy questions code
             } else if(just_question.test(message.content)){
                 let args = message.content.split(" [");
                 if (coins >= 25 && args.length >= 2) {
@@ -380,9 +380,20 @@ bot.on('message', async message => {
                             if(max_score > 0) {
                                 if(type === 1) {
                                    if(uid == check_id) {
-                                        ans = matched_questions[0]['answer'];    
+                                        const filter_type = matched_questions.filter(person => {
+                                            if(person.type === 1) {
+                                                return true;
+                                            }
+                                        });
+                                        ans = filter_type[0]['answer'];
+                                        console.log(filter_type)
                                    } else {
-                                        ans = matched_questions[0]['answer'];
+                                        const filter_type = matched_questions.filter(person => {
+                                            if(person.type === 0) {
+                                                return true;
+                                            }
+                                        })
+                                        ans = filter_type[0]['answer'];
                                    }
                                 } else {
                                     ans = matched_questions[0]['answer'];
