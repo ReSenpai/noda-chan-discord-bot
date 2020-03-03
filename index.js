@@ -106,6 +106,63 @@ function stemming(str) {
     return str_stemmed;
 }
 
+// connect to DB
+console.log('Noda / MSG / Create MySQL connection');
+// connection info
+let connection  = mysql.createPool({
+    connectionLimit:    10,
+    host:               config.DB.host,
+    user:               config.DB.user,
+    password:           config.DB.password,
+    database:           config.DB.database,
+    acquireTimeout:     1000000,
+    connectTimeout:     20000
+});
+
+// make MySQL query async-await
+const query = util.promisify(connection.query).bind(connection);
+
+// make connection to DB
+// function connectDB(connection) {
+//     console.log('Noda / MSG / Connect to MySQL DB');
+//     // connect to database
+//     connection.connect(function(err) {
+//         if (err) {
+//             console.error('Noda / MSG / Database connection error: ' + err.stack);
+//             return;
+//         }
+//         console.log('Noda / MSG / Connected to DB as id ' + connection.threadId);
+//     });
+// }
+
+// handle disconnect to DB
+// function handleDisconnect(conn) {
+//     conn.on('error', function(err) {
+//         console.log('Noda / DB / Error');
+//         if (!err.fatal) {
+//             console.log('Noda / DB / Non critical error');
+//             return;
+//         }
+
+//         if (err.code !== 'PROTOCOL_CONNECTION_LOST') {
+//             console.log('Noda / DB / Cannot reconnect DB, ggwp');
+//             throw err;
+//         }
+
+//         console.log('Noda / MSG / Re-connecting lost connection: ' + err.stack);
+
+//         connection = mysql.createConnection(conn.config);
+//         handleDisconnect(connection);
+//         connectDB(connection);
+//     });
+// }
+
+// todo create stack of connections!
+// handleDisconnect(connection);
+// connectDB(connection);
+
+// connect to DB
+// connectDB(connection);
 console.log('Noda / MSG / Start listening');
 // Handle messages
 bot.on('message', async message => {
@@ -139,33 +196,14 @@ bot.on('message', async message => {
         bot.send = function(msg) {
             message.channel.send(msg)
         }
-
-        console.log('Noda / MSG / Create MySQL connection');
-        // connection info
-        const connection  = mysql.createConnection({
-            host:       config.DB.host,
-            user:       config.DB.user,
-            password:   config.DB.password,
-            database:   config.DB.database
-        });
-
-        // make MySQL query async-await
-        const query = util.promisify(connection.query).bind(connection);
     
-        // handle errors
-        connection.on('error', function() {
-            console.log('Noda / MSG / Connection cancelled due to timeout or another error');
-        });
+        // // handle errors
+        // connection.on('error', function() {
+        //     console.log('Noda / MSG / Connection cancelled due to timeout or another error');
+        // });
 
-        console.log('Noda / MSG / Connect to MySQL DB');
-        // connect to database
-        connection.connect(function(err) {
-            if (err) {
-                console.error('Noda / MSG / Database connection error: ' + err.stack);
-                return;
-            }
-            console.log('Noda / MSG / Connected to DB as id ' + connection.threadId);
-        });
+        // reconnect if needed
+        // connectDB(connection);
 
         // add user if needed
         console.log('Noda / MSG / Add user into DB if needed ( may not handle nick change )');
@@ -174,7 +212,6 @@ bot.on('message', async message => {
         // get user info from DB
         console.log('Noda / MSG / Get user info from DB');
         const user_data = await query(sql_get_user_info, [uid]);
-        // console.log(user_data[0]);
 
         if (user_data) {
             // User Data
@@ -313,7 +350,6 @@ bot.on('message', async message => {
                         console.log(`Noda / MSG / HM / BQ / Common question was bought`);
                         question_type = 0;
                         coins -= 25;
-                        console.log(question_type);
                     } else {
                         console.log(`Noda / MSG / HM / BQ / Incorrect question type`);
                         let plate = new RichEmbed()
@@ -459,7 +495,7 @@ bot.on('message', async message => {
                                         break;
                                 }
                             }
-                            console.log(`Noda / MSG / HM / QN / Сhosen answer: ${ans}`);
+                            console.log(`Noda / MSG / HM / QN / Сhosen answer: '${ans}'`);
                             // answer
                             message.channel.send(ans);
                         }
@@ -496,11 +532,11 @@ bot.on('message', async message => {
 
                 // close connection to DB
                 console.log('Noda / MSG / Disconnected from DB');
-                connection.end();
+                // connection.end();
             } else {
                 // close connection to DB
                 console.log('Noda / MSG / Disconnected from DB');
-                connection.end();
+                // connection.end();
             }
         }
     // handle errors
@@ -509,7 +545,7 @@ bot.on('message', async message => {
         console.log(error);
         if(connection) {
             console.log('Noda / MSG / Disconnected from DB');
-            connection.end();
+            // connection.end();
         }
     } finally {
         console.timeEnd('Noda / MSG / TIME');
