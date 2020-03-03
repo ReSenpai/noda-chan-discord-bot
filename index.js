@@ -261,7 +261,6 @@ bot.on('message', async message => {
                             console.log(`Noda / MSG / HM / BQ / Personal question was bought`);
                             question_type = 1;
                             coins -= 100;
-                            console.log(question_type);
                         } else {
                             console.log(`Noda / MSG / HM / BQ / Not enough money for personal question`);
                             bot.send(`Не хватает чеканных монет для покупки личного вопроса.\nВаш баланс: ${coins} монет!`)
@@ -354,23 +353,15 @@ bot.on('message', async message => {
                         console.log(`Noda / MSG / HM / QN / Find the question in DB`);
                         // find the closest questions in DB
                         matched_questions = await query(queries.sql_find_question, [stemming(message.content), uid]);
-                        // TEST
-                        // personal_question_check = await query(sql_get_conn_quest_ans_info, [uid]);
-                        // let check_id = 0;
-                        // try {
-                        //     check_id = personal_question_check[0]['user_id'];
-                        // } catch(error) {
-                        //     check_id = 0;
-                        // }
                         // if questions exist
                         if(matched_questions) {
                             console.log(`Noda / MSG / HM / QN / There are some question in DB`);
-                            // console.log('question_type :' + matched_questions[0]['type']);
                             // maximum score to float
                             let max_score = matched_questions[0]['score'];
                             let ans = '';
                             // if max score greater than 0
                             if(max_score > 0) {
+                                console.log(`Noda / MSG / HM / QN / Choosing the best answer`);
                                 let score = 0;
                                 for(qus of matched_questions) {
                                     if(!ans && qus['type'] === 0) {
@@ -384,37 +375,17 @@ bot.on('message', async message => {
                                         break;
                                     }
                                 }
-                                // если все 100 вопрос оказались личными и не принадлежат юзеру
-                                // todo разделить общие и личные вопросы
+
+                                // just in case
                                 if(!ans) ans = 'ой';
 
-                                console.log(`Noda / MSG / HM / QN / Top 5 matched questions`);
-                                if(matched_questions.length > 5) {
-                                    console.log(matched_questions.slice(0,5));
+                                // log top 3 matched questions
+                                console.log(`Noda / MSG / HM / QN / Top 3 matched questions`);
+                                if(matched_questions.length > 3) {
+                                    console.log(matched_questions.slice(0, 3));
                                 } else {
                                     console.log(matched_questions);
                                 }
-                                // console.log(`Noda / MSG / HM / QN / Choose the top answer`);
-                                // ans = matched_questions[0]['answer'];
-                                // if(type === 1) {
-                                //    if(uid == check_id) {
-                                //         const filter_type = matched_questions.filter(person => {
-                                //             if(person.type === 1) {
-                                //                 return true;
-                                //             }
-                                //         });
-                                //         ans = filter_type[0]['answer'];
-                                //    } else {
-                                //         const filter_type = matched_questions.filter(person => {
-                                //             if(person.type === 0) {
-                                //                 return true;
-                                //             }
-                                //         })
-                                //         ans = filter_type[0]['answer'];
-                                //    }
-                                // } else {
-                                //     ans = matched_questions[0]['answer'];
-                                // }   
                             } else {
                                 console.log(`Noda / MSG / HM / QN / No matches with questions in DB`);
                                 console.log(`Noda / MSG / HM / QN / Choose a random answer`);
@@ -442,8 +413,6 @@ bot.on('message', async message => {
                             // answer
                             message.channel.send(ans);
                         }
-                        // console.log('Matched questions');
-                        // console.log(matched_questions);
                     }
                 }
                 // update coins, exp and lvl
