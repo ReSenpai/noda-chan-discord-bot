@@ -385,17 +385,13 @@ bot.on('message', async message => {
                         // find the closest questions in DB
                         matched_questions = await query(sql_find_question, [stemming(message.content)]);
                         // TEST
-                        /*personal_question_check = await query(sql_get_conn_quest_ans_info, [uid]);
+                        personal_question_check = await query(sql_get_conn_quest_ans_info, [uid]);
                         let check_id = 0;
                         try {
                             check_id = personal_question_check[0]['user_id'];
                         } catch(error) {
                             check_id = 0;
                         }
-                        console.log(personal_question_check);
-                        console.log(`user id = ${check_id}`);
-                        console.log(uid == check_id);*/
-
                         // if questions exist
                         if(matched_questions) {
                             console.log(`Noda / MSG / HM / QN / There are some question in DB`);
@@ -414,7 +410,7 @@ bot.on('message', async message => {
                                 }
                                 console.log(`Noda / MSG / HM / QN / Choose the top answer`);
                                 ans = matched_questions[0]['answer'];
-                                /*if(type === 1) {
+                                if(type === 1) {
                                    if(uid == check_id) {
                                         const filter_type = matched_questions.filter(person => {
                                             if(person.type === 1) {
@@ -422,7 +418,6 @@ bot.on('message', async message => {
                                             }
                                         });
                                         ans = filter_type[0]['answer'];
-                                        console.log(filter_type)
                                    } else {
                                         const filter_type = matched_questions.filter(person => {
                                             if(person.type === 0) {
@@ -433,7 +428,7 @@ bot.on('message', async message => {
                                    }
                                 } else {
                                     ans = matched_questions[0]['answer'];
-                                }*/   
+                                }   
                             } else {
                                 console.log(`Noda / MSG / HM / QN / No matches with questions in DB`);
                                 console.log(`Noda / MSG / HM / QN / Choose a random answer`);
