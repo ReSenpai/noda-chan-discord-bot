@@ -108,7 +108,7 @@ function stemming(str) {
 
 // connect to DB
 console.log('Noda / MSG / Create MySQL connection');
-// connection info
+// create pool connection
 let connection  = mysql.createPool({
     connectionLimit:    10,
     host:               config.DB.host,
@@ -122,47 +122,6 @@ let connection  = mysql.createPool({
 // make MySQL query async-await
 const query = util.promisify(connection.query).bind(connection);
 
-// make connection to DB
-// function connectDB(connection) {
-//     console.log('Noda / MSG / Connect to MySQL DB');
-//     // connect to database
-//     connection.connect(function(err) {
-//         if (err) {
-//             console.error('Noda / MSG / Database connection error: ' + err.stack);
-//             return;
-//         }
-//         console.log('Noda / MSG / Connected to DB as id ' + connection.threadId);
-//     });
-// }
-
-// handle disconnect to DB
-// function handleDisconnect(conn) {
-//     conn.on('error', function(err) {
-//         console.log('Noda / DB / Error');
-//         if (!err.fatal) {
-//             console.log('Noda / DB / Non critical error');
-//             return;
-//         }
-
-//         if (err.code !== 'PROTOCOL_CONNECTION_LOST') {
-//             console.log('Noda / DB / Cannot reconnect DB, ggwp');
-//             throw err;
-//         }
-
-//         console.log('Noda / MSG / Re-connecting lost connection: ' + err.stack);
-
-//         connection = mysql.createConnection(conn.config);
-//         handleDisconnect(connection);
-//         connectDB(connection);
-//     });
-// }
-
-// todo create stack of connections!
-// handleDisconnect(connection);
-// connectDB(connection);
-
-// connect to DB
-// connectDB(connection);
 console.log('Noda / MSG / Start listening');
 // Handle messages
 bot.on('message', async message => {
@@ -187,23 +146,15 @@ bot.on('message', async message => {
         try {
             nickname = message.member.nickname;
         } catch (error) {
+            // name for direct questions
             nickname = 'whisperer';
         }
-        
         const username = message.author.username;
     
         // unused?
         bot.send = function(msg) {
             message.channel.send(msg)
         }
-    
-        // // handle errors
-        // connection.on('error', function() {
-        //     console.log('Noda / MSG / Connection cancelled due to timeout or another error');
-        // });
-
-        // reconnect if needed
-        // connectDB(connection);
 
         // add user if needed
         console.log('Noda / MSG / Add user into DB if needed ( may not handle nick change )');
