@@ -126,6 +126,7 @@ bot.on('message', async message => {
             message.channel.send(msg)
         }
 
+        console.time('Noda / MSG / Get user info time');
         // add user if needed
         console.log('Noda / MSG / Add user into DB if needed ( may not handle nick change )');
         await query(queries.sql_add_user, [uid, username, nickname]);
@@ -133,6 +134,7 @@ bot.on('message', async message => {
         // get user info from DB
         console.log('Noda / MSG / Get user info from DB');
         const user_data = await query(queries.sql_get_user_info, [uid]);
+        console.timeEnd('Noda / MSG / Get user info time');
 
         if (user_data) {
             // User Data
@@ -352,7 +354,10 @@ bot.on('message', async message => {
                     } else {
                         console.log(`Noda / MSG / HM / QN / Find the question in DB`);
                         // find the closest questions in DB
+                        console.time('Noda / MSG / HM / QN / Question search time');
                         matched_questions = await query(queries.sql_find_question, [stemming(message.content), uid]);
+                        console.timeEnd('Noda / MSG / HM / QN / Question search time');
+                        console.time('Noda / MSG / HM / QN / Answer time');
                         // if questions exist
                         if(matched_questions) {
                             console.log(`Noda / MSG / HM / QN / There are some question in DB`);
@@ -411,6 +416,7 @@ bot.on('message', async message => {
                             }
                             console.log(`Noda / MSG / HM / QN / Сhosen answer: '${ans}'`);
                             // answer
+                            console.timeEnd('Noda / MSG / HM / QN / Answer time');
                             message.channel.send(ans);
                         }
                     }
@@ -427,6 +433,7 @@ bot.on('message', async message => {
 
             // update user info in DB
             console.log(`Noda / MSG / HM / Update user data in DB`);
+            console.time(`Noda / MSG / HM / Update user data time`);
             await query(queries.sql_upd_user_info, [coins, exp, lvl, question_num, uid]);
             // if the user created a question
             if (question && answer) {
@@ -442,6 +449,7 @@ bot.on('message', async message => {
                 // link added question and added answer in table conn_quest_ans
                 await query(queries.sql_connect_question, [question_id, answer_id, uid, question_type]);
             }
+            console.timeEnd(`Noda / MSG / HM / Update user data time`);
         }
     // handle errors
     } catch (error) {
