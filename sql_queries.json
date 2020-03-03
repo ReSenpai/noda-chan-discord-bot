@@ -1,0 +1,25 @@
+{
+    "sql_add_user": 
+    "INSERT IGNORE INTO users (user_id, user_name, server_name) VALUES (?, ?, ?)",
+
+    "sql_get_user_info":
+    "SELECT * FROM users WHERE user_id = ?",
+
+    "sql_get_conn_quest_ans_info":
+    "SELECT * FROM conn_quest_ans WHERE user_id = ?",
+
+    "sql_upd_user_info": 
+    "UPDATE users SET coins = ?, exp = ?, lvl = ?, questions = ? WHERE user_id = ?",
+
+    "sql_add_question": 
+    "INSERT INTO questions (text) VALUES (?)",
+                                
+    "sql_add_answer": 
+    "INSERT INTO answers (text) VALUES (?)",
+
+    "sql_connect_question": 
+    "INSERT INTO conn_quest_ans (question_id, answer_id, user_id, type) VALUES (?, ?, ?, ?)",
+
+    "sql_find_question": 
+    "SELECT questions.text AS question, answers.text AS answer, type, MATCH (questions.text) AGAINST (? IN BOOLEAN MODE) AS score FROM questions JOIN conn_quest_ans USING (question_id) JOIN answers USING (answer_id) ORDER BY score DESC LIMIT 100"
+}

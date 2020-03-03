@@ -1,49 +1,19 @@
-// queries
-const sql_add_user = 
-`INSERT IGNORE INTO users (user_id, user_name, server_name)
-    VALUES (?, ?, ?)`;
-
-const sql_get_user_info =
-`SELECT * FROM users
-    WHERE user_id = ?`;
-
-const sql_get_conn_quest_ans_info =
-`SELECT * FROM conn_quest_ans
-    WHERE user_id = ?`;
-
-const sql_upd_user_info = 
-`UPDATE users
-    SET coins = ?, exp = ?, lvl = ?, questions = ?
-    WHERE user_id = ?`;
-
-const sql_add_question = 
-`INSERT INTO questions (text)
-    VALUES (?)`;
-                            
-const sql_add_answer = 
-`INSERT INTO answers (text)
-    VALUES (?)`;
-
-const sql_connect_question = 
-`INSERT INTO conn_quest_ans (question_id, answer_id, user_id, type)
-    VALUES (?, ?, ?, ?);`;
-
-const sql_find_question = 
-`SELECT questions.text AS question, answers.text AS answer, type, 
-    MATCH (questions.text) AGAINST (? IN BOOLEAN MODE) AS score 
-    FROM questions 
-    JOIN conn_quest_ans USING (question_id) 
-    JOIN answers USING (answer_id) 
-    ORDER BY score DESC LIMIT 100`;
-
-// require
 console.log('Noda / Start...');
+// require
+// discord bot library
 const Discord = require('discord.js');
+const { Attachment, RichEmbed, Emoji, Guild, Client } = require('discord.js');
+// program config
 const config = require('./config.json');
 const fs = require('fs');
+// mysql DB library
 const mysql = require('mysql');
+// library for making queries asinc-await
 const util = require('util');
-const { Attachment, RichEmbed, Emoji, Guild, Client } = require('discord.js');
+// mysql queries
+const queries = require('./sql_queries.json');
+// language processing library
+var natural = require('natural');
 
 // require modules
 fs.readdir('./modules/',(err,files)=>{
@@ -78,12 +48,12 @@ const personal_question = /^личный$/i;
 const common_question = /^общий$/i;
 
 // login bot
+console.log('Noda / Loging bot');
 bot.login(token);
 
 // bot.on('ready', async () => {
-//     console.log(`Нода тян запущена`);
 //     bot.generateInvite(["ADMINISTRATOR"]).then(link => {
-//         console.log(link);
+//         console.log(`Noda / Invite link: ${link}`);
 //     }).catch(err => {
 //         console.log(err.stack);
 //     })
@@ -92,8 +62,6 @@ bot.login(token);
 console.log('Noda / Bot initialized');
 
 // russian stemming
-// npm i natural
-var natural = require('natural');
 var tokenizer = new natural.WordTokenizer();
 function stemming(str) {
     let words = tokenizer.tokenize(str);
@@ -158,11 +126,11 @@ bot.on('message', async message => {
 
         // add user if needed
         console.log('Noda / MSG / Add user into DB if needed ( may not handle nick change )');
-        await query(sql_add_user, [uid, username, nickname]);
+        await query(queries.sql_add_user, [uid, username, nickname]);
 
         // get user info from DB
         console.log('Noda / MSG / Get user info from DB');
-        const user_data = await query(sql_get_user_info, [uid]);
+        const user_data = await query(queries.sql_get_user_info, [uid]);
 
         if (user_data) {
             // User Data
@@ -383,9 +351,9 @@ bot.on('message', async message => {
                     } else {
                         console.log(`Noda / MSG / HM / QN / Find the question in DB`);
                         // find the closest questions in DB
-                        matched_questions = await query(sql_find_question, [stemming(message.content)]);
+                        matched_questions = await query(queries.sql_find_question, [stemming(message.content)]);
                         // TEST
-                        /*personal_question_check = await query(sql_get_conn_quest_ans_info, [uid]);
+                        /*personal_question_check = await query(queries.sql_get_conn_quest_ans_info, [uid]);
                         let check_id = 0;
                         try {
                             check_id = personal_question_check[0]['user_id'];
@@ -466,38 +434,26 @@ bot.on('message', async message => {
 
             // update user info in DB
             console.log(`Noda / MSG / HM / Update user data in DB`);
-            await query(sql_upd_user_info, [coins, exp, lvl, question_num, uid]);
+            await query(queries.sql_upd_user_info, [coins, exp, lvl, question_num, uid]);
             // if the user created a question
             if (question && answer) {
                 console.log(`Noda / MSG / HM / Add bought question into DB`);
                 // add question to table questions
-                var add_question = await query(sql_add_question, [stemming(question)]);
+                var add_question = await query(queries.sql_add_question, [stemming(question)]);
                 var question_id = add_question.insertId;
     
                 // add answer to table answers
-                add_answer = await query(sql_add_answer, [answer]);
+                add_answer = await query(queries.sql_add_answer, [answer]);
                 var answer_id = add_answer.insertId;
 
                 // link added question and added answer in table conn_quest_ans
-                await query(sql_connect_question, [question_id, answer_id, uid, question_type]);
-
-                // close connection to DB
-                console.log('Noda / MSG / Disconnected from DB');
-                // connection.end();
-            } else {
-                // close connection to DB
-                console.log('Noda / MSG / Disconnected from DB');
-                // connection.end();
+                await query(queries.sql_connect_question, [question_id, answer_id, uid, question_type]);
             }
         }
     // handle errors
     } catch (error) {
         console.log('Noda / MSG / ERROR');
         console.log(error);
-        if(connection) {
-            console.log('Noda / MSG / Disconnected from DB');
-            // connection.end();
-        }
     } finally {
         console.timeEnd('Noda / MSG / TIME');
     }
