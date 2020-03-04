@@ -1,7 +1,7 @@
 const regex = require('./regex')
 const { Attachment, RichEmbed, Emoji, Guild, Client } = require('discord.js');
 
-function executeCommand(message, user) {
+function executeCommand(message, user, query) {
     // Buy questions guide
     if (regex.buy_question.test(message.content)) {
         console.log(`Noda / MSG / HM / Buy question info`);
