@@ -1,4 +1,5 @@
 const natural = require('natural');
+
 // russian stemming
 var tokenizer = new natural.WordTokenizer();
 function stemming(str) {
@@ -31,7 +32,4 @@ function rndAnswer(answers) {
     return answers[Math.ceil(Math.random() * answers.length)];
 }
 
-module.exports.stemming = stemming;
-module.exports.nodaAnsw = nodaAnsw;
-module.exports.confusedAnsw = confusedAnsw;
-module.exports.rndAnswer = rndAnswer;
+module.exports = {stemming, nodaAnsw, confusedAnsw, rndAnswer};

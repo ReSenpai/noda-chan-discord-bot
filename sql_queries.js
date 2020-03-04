@@ -32,10 +32,4 @@ const sql_find_question =
     ORDER BY score 
     DESC LIMIT 100`;
     
-module.exports.sql_add_user = sql_add_user;
-module.exports.sql_get_user_info = sql_get_user_info;
-module.exports.sql_upd_user_info = sql_upd_user_info;
-module.exports.sql_add_question = sql_add_question;
-module.exports.sql_add_answer = sql_add_answer;
-module.exports.sql_connect_question = sql_connect_question;
-module.exports.sql_find_question = sql_find_question;
+module.exports = {sql_add_user, sql_get_user_info, sql_upd_user_info, sql_add_question, sql_add_answer, sql_connect_question, sql_find_question};
