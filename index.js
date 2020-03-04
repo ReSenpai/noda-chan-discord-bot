@@ -34,8 +34,6 @@ const commands = require('./commands');
 //     });
 // });
 
-console.log('Noda / All modules are connected');
-
 // bot vars
 const bot = new discord.Client();
 bot.commands = new discord.Collection();
@@ -87,12 +85,12 @@ bot.on('message', async message => {
         try {
             nickname = message.member.nickname;
         } catch (error) {
-            // name for direct questions
+        // name for direct questions
             nickname = 'whisperer';
         }
         const username = message.author.username;
     
-        // unused?
+        // alias message.channel.send
         bot.send = function(msg) {
             message.channel.send(msg)
         }
