@@ -9,6 +9,5 @@ const DB = {    host: 'localhost',
                     bigNumberStrings: true    
                 };
 
-module.exports.token = token;
-module.exports.DB = DB;
+module.exports = {token, DB};
     
