@@ -4,7 +4,7 @@ console.log('Noda / Start...');
 const discord = require('discord.js');
 const { Attachment, RichEmbed, Emoji, Guild, Client } = require('discord.js');
 // program config
-const config = require('./config.json');
+const config = require('./config');
 const fs = require('fs');
 // mysql DB library
 const mysql = require('mysql');
@@ -15,33 +15,33 @@ const queries = require('./sql_queries');
 // language processing library
 const natural = require('natural');
 const regex = require('./regex')
+const utils = require('./utils')
 
 
 // require modules
-fs.readdir('./modules/',(err,files)=>{
-    if(err) console.log(err);
-    let jsfiles = files.filter(f => f.split(".").pop() === "js");
-    if(jsfiles.length <=0) console.log("Noda / Nothing to load");
-    console.log(`Noda / LM / Loading ${jsfiles.length} module(s)`);
-    jsfiles.forEach((f,i) =>{
-        let props = require(`./modules/${f}`);
-        console.log(`Noda / LM / Module N${f} is loaded`);
-        for(let i = 0; i < props.help.name.length; i++){
-            bot.commands.set(props.help.name[i],props);
-        }
-    });
-});
+// fs.readdir('./modules/', (err,files) => {
+//     if(err) console.log(err);
+//     let jsfiles = files.filter(f => f.split(".").pop() === "js");
+//     if(jsfiles.length <=0) console.log("Noda / Nothing to load");
+//     console.log(`Noda / LM / Loading ${jsfiles.length} module(s)`);
+//     jsfiles.forEach((f,i) => {
+//         let props = require(`./modules/${f}`);
+//         console.log(`Noda / LM / ${f} module is loaded`);
+//         for(let i = 0; i < props.help.name.length; i++) {
+//             bot.commands.set(props.help.name[i],props);
+//         }
+//     });
+// });
 
 console.log('Noda / All modules are connected');
 
 // bot vars
 const bot = new discord.Client();
 bot.commands = new discord.Collection();
-const token = config.token;
 
 // login bot
 console.log('Noda / Login bot');
-bot.login(token);
+bot.login(config.token);
 
 // bot.on('ready', async () => {
 //     bot.generateInvite(["ADMINISTRATOR"]).then(link => {
@@ -53,33 +53,10 @@ bot.login(token);
 
 console.log('Noda / Bot initialized');
 
-// russian stemming
-var tokenizer = new natural.WordTokenizer();
-function stemming(str) {
-    let words = tokenizer.tokenize(str);
-    let stems = [];
-    for (word of words) {
-        stems.push(natural.PorterStemmerRu.stem(word));
-    }
-    str_stemmed = stems.join(' ')
-    console.log(`Noda / Stemmed / ${str_stemmed}`);
-    return str_stemmed;
-}
-
 // connect to DB
 console.log('Noda / MSG / Create MySQL connection');
 // create pool connection
-let connection  = mysql.createPool({
-    connectionLimit:    10,
-    host:               config.DB.host,
-    user:               config.DB.user,
-    password:           config.DB.password,
-    database:           config.DB.database,
-    acquireTimeout:     1000000,
-    connectTimeout:     20000,
-    supportBigNumbers: true,
-    bigNumberStrings: true
-});
+let connection  = mysql.createPool(config.DB);
 
 // make MySQL query async-await
 const query = util.promisify(connection.query).bind(connection);
@@ -349,7 +326,7 @@ bot.on('message', async message => {
                     console.log(`Noda / MSG / HM / QN / Find the question in DB`);
                     // find the closest questions in DB
                     console.time('Noda / MSG / HM / QN / Question search time');
-                    matched_questions = await query(queries.sql_find_question, [stemming(message.content), uid]);
+                    matched_questions = await query(queries.sql_find_question, [utils.stemming(message.content), uid]);
                     console.timeEnd('Noda / MSG / HM / QN / Question search time');
                     console.time('Noda / MSG / HM / QN / Answer time');
                     // if questions exist
@@ -431,7 +408,7 @@ bot.on('message', async message => {
             if (question && answer) {
                 console.log(`Noda / MSG / HM / Add bought question into DB`);
                 // add question to table questions
-                var add_question = await query(queries.sql_add_question, [stemming(question)]);
+                var add_question = await query(queries.sql_add_question, [utils.stemming(question)]);
                 var question_id = add_question.insertId;
     
                 // add answer to table answers

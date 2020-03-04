@@ -1,8 +1,0 @@
-{
-    "token": "NjgxOTQxNTk1NjcwNTc3MTg4.XlVx6A.R9uu8loTr-EcUAQV4PdJN3wfsBk",
-    "DB": {
-        "host": "localhost",
-        "user": "root",
-        "password": "", 
-        "database": "mydb" }
-}
