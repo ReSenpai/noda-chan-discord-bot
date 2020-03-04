@@ -49,4 +49,18 @@ async function updUserInfo(message, user, query) {
     }
 }
 
-module.exports = {stemming, nodaAnsw, confusedAnsw, rndAnswer, updUserInfo};
+function getDiscordInfo(message, user, query) {
+    // user info from discord
+    user.uid = message.author.id;
+    user.server_name = '';
+    try {
+        user.server_name = message.member.nickname;
+    } catch (error) {
+        // name for direct questions
+        user.server_name = 'whisperer';
+    }
+    user.user_name = message.author.username;
+    user.avatar = message.author.avatarURL;
+}
+
+module.exports = {stemming, nodaAnsw, confusedAnsw, rndAnswer, updUserInfo, getDiscordInfo};

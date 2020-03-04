@@ -56,37 +56,25 @@ bot.on('message', async message => {
         }
         console.log(`Noda / MSG / Message text: '${message.content}'`);
     
-        // user info from discord
-        const uid = message.author.id;
-        let server_name = '';
-        try {
-            server_name = message.member.nickname;
-        } catch (error) {
-            // name for direct questions
-            server_name = 'whisperer';
-        }
-        const user_name = message.author.username;
-    
-        // alias message.channel.send
-        bot.send = function(msg) {
-            message.channel.send(msg)
-        }
+        let user = {};
+        // get user info from discord
+        utils.getDiscordInfo(message, user, query);
 
         console.time('Noda / MSG / Get user info time');
         // add user if needed
         console.log('Noda / MSG / Add user into DB if needed ( may not handle nick change )');
-        await query(queries.sql_add_user, [uid, user_name, server_name]);
+        await query(queries.sql_add_user, [user.uid, user.user_name, user.server_name]);
 
         // get user info from DB
         console.log('Noda / MSG / Get user info from DB');
-        const user_data = await query(queries.sql_get_user_info, [uid]);
+        const user_data = await query(queries.sql_get_user_info, [user.uid]);
         console.timeEnd('Noda / MSG / Get user info time');
 
         if (user_data) {
             // user data
             console.log('Noda / MSG / Parse user info');
-            user_disc = {uid, avatar: message.author.avatarURL, question: null, answer: null, question_type: null};
-            let user = Object.assign(user_disc, user_data[0]);
+            user_quest = { question: null, answer: null, question_type: null };
+            user = {...user_data[0], ...user, ...user_quest};
 
             // log user info
             console.log(`Noda / MSG / User info: \n\tuser_name: '${user.user_name}'\n\tnickname: '${user.server_name}'` + 
