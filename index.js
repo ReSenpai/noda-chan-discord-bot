@@ -3,10 +3,8 @@ console.log('Noda / Start...');
 // require
 // discord bot library
 const discord = require('discord.js');
-const { Attachment, RichEmbed, Emoji, Guild, Client } = require('discord.js');
 // program config
 const config = require('./config');
-const fs = require('fs');
 // mysql DB library
 const mysql = require('mysql');
 // library for making queries asinc-await
@@ -172,7 +170,7 @@ bot.on('message', async message => {
             // update user info in DB
             console.log(`Noda / MSG / HM / Update user data in DB`);
             console.time(`Noda / MSG / HM / Update user data time`);
-            await query(queries.sql_upd_user_info, [user.coins, user.exp, user.lvl, user.questions, user.uid]);
+            connection.query(queries.sql_upd_user_info, [user.coins, user.exp, user.lvl, user.questions, user.uid]);
             // if the user created a question
             if (user.question && user.answer) {
                 console.log(`Noda / MSG / HM / Add bought question into DB`);
@@ -185,7 +183,7 @@ bot.on('message', async message => {
                 let answer_id = add_answer.insertId;
 
                 // link added question and added answer in table conn_quest_ans
-                await query(queries.sql_connect_question, [question_id, answer_id, user.uid, user.question_type]);
+                connection.query(queries.sql_connect_question, [question_id, answer_id, user.uid, user.question_type]);
             }
             console.timeEnd(`Noda / MSG / HM / Update user data time`);
         }

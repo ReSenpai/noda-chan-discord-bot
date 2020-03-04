@@ -122,19 +122,7 @@ function executeCommand(message, user, query) {
     // Show profiles
     } else if (regex.show_profile.test(message.content)) {
         console.log(`Noda / MSG / HM / Show profiles`);
-        if(message.member.nickname === null){
-            let embed = new RichEmbed()
-            .setTitle(`Профиль игрока: ${user.username}`)
-            .setColor(0x0a4bff)
-            .setDescription(`
-            :trophy:LVL: ${user.lvl}
-            :jigsaw:XP: ${user.exp}
-            Чеканных монет: ${user.coins} :moneybag:
-            :key:Общих вопросов куплено: ${user.questions}
-            `)
-            .setThumbnail(user.avatar)
-            message.channel.send(embed);
-        } else {
+        try {
             let embed = new RichEmbed()
             .setTitle(`Профиль игрока: ${user.nickname}`)
             .setColor(0x0a4bff)
@@ -142,6 +130,18 @@ function executeCommand(message, user, query) {
             :trophy:LVL: ${user.lvl}
             :jigsaw:XP: ${user.exp}
             :moneybag:Чеканных монет: ${user.coins}
+            :key:Общих вопросов куплено: ${user.questions}
+            `)
+            .setThumbnail(user.avatar)
+            message.channel.send(embed);
+        } catch (error) {
+            let embed = new RichEmbed()
+            .setTitle(`Профиль игрока: ${user.username}`)
+            .setColor(0x0a4bff)
+            .setDescription(`
+            :trophy:LVL: ${user.lvl}
+            :jigsaw:XP: ${user.exp}
+            Чеканных монет: ${user.coins} :moneybag:
             :key:Общих вопросов куплено: ${user.questions}
             `)
             .setThumbnail(user.avatar)
