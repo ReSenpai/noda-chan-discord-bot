@@ -97,8 +97,8 @@ console.log('Noda / MSG / Start listening');
 bot.on('message', async message => {
     try {
         console.time('Noda / MSG / TIME');
-        console.log('Noda / MSG / Handle new message');
         console.log('===================================================');
+        console.log('Noda / MSG / Handle new message');
         // don't handle messages from bots
         if(message.author.bot)
         {
