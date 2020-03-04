@@ -16,6 +16,7 @@ const queries = require('./sql_queries');
 const natural = require('natural');
 const regex = require('./regex')
 const utils = require('./utils')
+const commands = require('./commands');
 
 
 // require modules
@@ -108,21 +109,21 @@ bot.on('message', async message => {
         if (user_data) {
             // User Data
             console.log('Noda / MSG / Parse user data');
-            let coins = user_data[0]['coins'];
-            let exp = user_data[0]['exp'];
-            let lvl = user_data[0]['lvl'];
-            let nickname = user_data[0]['server_name'];
-            let username = user_data[0]['user_name'];
-            let avatar = message.author.avatarURL;
-            let question_num = user_data[0]['questions'];
-            let question = null;
-            let answer = null;
-            console.log(`Noda / MSG / User data: \n\tuser_name: '${username}'\n\tnickname: '${nickname}'` + 
-                `\n\tuser_id: '${uid}'\n\tcoins: '${coins}'\n\tlvl: '${lvl}'\n\texp: '${exp}'\n\tquestions: '${question_num}'`);
+            let user = Object.assign({}, user_data[0]);
+            user.uid = uid;
+            user.avatar = message.author.avatarURL;
+            user.question = null;
+            user.answer = null;
+            user.question_type = null;
+            console.log(`Noda / MSG / User data: \n\tuser_name: '${user.username}'\n\tnickname: '${user.nickname}'` + 
+                `\n\tuser_id: '${user.uid}'\n\tcoins: '${user.coins}'\n\tlvl: '${user.lvl}'\n\texp: '${user.exp}'\n\tquestions: '${user.question_num}'`);
             
             // system commands
             console.log('Noda / MSG / HM / Handle message');
             if(message.content[0] === '!') {
+                user = commands.exec(message, user);
+            } else {
+                // "Нода ..."
                 if(regex.noda.test(message.content)){
                     console.log(`Noda / MSG / HM / Bot's name`);
                     let randomNumber = Math.ceil(Math.random() * 10);
@@ -155,178 +156,12 @@ bot.on('message', async message => {
                             message.channel.send('Как банный лист пристал...');
                             break;
                     }
-                    // Buy questions guide
-                } else if(regex.buy_question.test(message.content)){
-                    console.log(`Noda / MSG / HM / Buy question info`);
-                    const shop = new RichEmbed()
-                        .setTitle(`Нода-шоп!`)
-                        .setColor(0xebe134)
-                        .setDescription(`
-                        Ваш баланс монет: ${coins}
-                        Купить общий вопрос: 25 чеканных монет
-                        Купить личный вопрос: 100 чеканных монет
-        
-                        Для покупки общего вопроса напишите: !общий вопрос
-                        Для покупки личного вопроса напишите: !личный вопрос
-                        `);
-                    message.channel.send(shop);
-                    // Buy common_questions guide
-                } else if(regex.buy_common_question.test(message.content)){
-                    console.log(`Noda / MSG / HM / Buy common question info`);
-                    if(coins >= 25){
-                        const commonQuestion = new RichEmbed()
-                        .setTitle(`Покупка общего вопроса.`)
-                        .setColor(0xebe134)
-                        .setDescription(`
-                        Ваш баланс монет: ${coins}
-                        Для покупки вопроса напишите или лучше скопируйте как шаблон:
-                        !вопрос [Тут пишите ваш вопрос, обязательно в квадратных скобочках] [А тут ваш ответ, так же в квадратных скобочках]
-                        `);
-                        message.channel.send(commonQuestion);
-                    } else {
-                        const commonQuestionFalse = new RichEmbed()
-                        .setTitle(`Отказано.`)
-                        .setColor(0xFF0000)
-                        .setDescription(`
-                        Не хватает чеканных монет, ваш баланс: ${coins}
-                        `);
-                        message.channel.send(commonQuestionFalse);
-                    }  
-                    // Buy personal_question guide 
-                } else if(regex.buy_personal_question.test(message.content)){
-                    console.log(`Noda / MSG / HM / Buy personal question info`);
-                    if(coins >= 100){
-                        let plate = new RichEmbed()
-                        .setTitle(`Покупка личного вопроса.`)
-                        .setColor(0xebe134)
-                        .setDescription(`
-                        Ваш баланс монет: ${coins}
-                        Для покупки вопроса напишите или лучше скопируйте как шаблон:
-                        !вопрос [Тут пишите ваш вопрос, обязательно в квадратных скобочках] [А тут ваш ответ, так же в квадратных скобочках] [личный]
-                        `);
-                        message.channel.send(plate);
-                    } else {
-                        let plate_false = new RichEmbed()
-                        .setTitle(`Отказано.`)
-                        .setColor(0xFF0000)
-                        .setDescription(`
-                        Не хватает чеканных монет, ваш баланс: ${coins}
-                        `);
-                        message.channel.send(plate_false);
-                    }  
-                // buy questions with code
-                } else if(regex.just_question.test(message.content)){
-                    console.log(`Noda / MSG / HM / BQ / Buy a question!`);
-                    let args = message.content.split(" [");
-                    if (coins >= 25 && args.length >= 2) {
-                        console.log(`Noda / MSG / HM / BQ / Enough money for a common question and the question has proper structure`);
-                        question = args[1].slice(0, -1);
-                        answer = args[2].slice(0, -1);
-                        try {
-                            question_type = args[3].slice(0, -1);
-                        } catch(error) {
-                            question_type = 0;
-                        }
-                        console.log(`Noda / MSG / HM / BQ / Question type ${question_type}`);
-                        if(personal_question.test(question_type)){
-                            if(coins >= 100) {
-                                console.log(`Noda / MSG / HM / BQ / Personal question was bought`);
-                                question_type = 1;
-                                coins -= 100;
-                            } else {
-                                console.log(`Noda / MSG / HM / BQ / Not enough money for personal question`);
-                                bot.send(`Не хватает чеканных монет для покупки личного вопроса.\nВаш баланс: ${coins} монет!`)
-                                return;
-                            }
-                        } else if(question_type === 0 || common_question.test(question_type)){
-                            console.log(`Noda / MSG / HM / BQ / Common question was bought`);
-                            question_type = 0;
-                            coins -= 25;
-                        } else {
-                            console.log(`Noda / MSG / HM / BQ / Incorrect question type`);
-                            let plate = new RichEmbed()
-                            .setTitle(`Ошибка`)
-                            .setColor(0xFF0000)
-                            .setDescription(`
-                            Вы неправильно указали тип вопроса.
-                            Для покупки личного вопроса, в конце оформления покупки обычного вопроса допишите [личный].
-                            Для покупки общего вопроса можно вообще не писать тип вопроса или напишите [общий]
-                            `)
-                            bot.send(plate);
-                            return;
-                        }
-                        question_num += 1;
-                        console.log(`Noda / MSG / HM / BQ / Q: '${question}', A: '${answer}', T: '${question_type}'`);
-                        const commonQuestionBye = new RichEmbed()
-                        .setTitle(`Покупка оформлена.`)
-                        .setColor(0x36D904)
-                        .setDescription(`
-                        Ваш вопрос: ${question}
-                        Ваш ответ: ${answer}
-                        Тип вопроса: ${question_type === 0 ? 'общий' : 'личный'}
-                        Осталось чеканных монет: ${coins}
-                        Приятного использования😘
-                        `);
-                        message.channel.send(commonQuestionBye);
-                    } else {
-                        console.log(`Noda / MSG / HM / Not enough money for a common question`);
-                        message.channel.send(`${args.length >= 2 ? 'Не хватает чеканных монет, ваш баланс:' + coins : 'Вы неправильно написали шаблон для покупки вопроса, можете посмотреть правильные шаблоны, написав "!купить общий вопрос" или "!купить личный вопрос"'}`);
-                    }
-                // Show profiles
-                } else if (regex.show_profile.test(message.content)) {
-                    console.log(`Noda / MSG / HM / Show profiles`);
-                    if(message.member.nickname === null){
-                        let embed = new RichEmbed()
-                        .setTitle(`Профиль игрока: ${username}`)
-                        .setColor(0x0a4bff)
-                        .setDescription(`
-                        :trophy:LVL: ${lvl}
-                        :jigsaw:XP: ${exp}
-                        Чеканных монет: ${coins} :moneybag:
-                        :key:Общих вопросов куплено: ${question_num}
-                        `)
-                        .setThumbnail(avatar)
-                        message.channel.send(embed);
-                    } else {
-                        let embed = new RichEmbed()
-                        .setTitle(`Профиль игрока: ${nickname}`)
-                        .setColor(0x0a4bff)
-                        .setDescription(`
-                        :trophy:LVL: ${lvl}
-                        :jigsaw:XP: ${exp}
-                        :moneybag:Чеканных монет: ${coins}
-                        :key:Общих вопросов куплено: ${question_num}
-                        `)
-                        .setThumbnail(avatar)
-                        message.channel.send(embed);
-                    }
-                // Throw a cube
-                } else if(regex.cube.test(message.content)) {
-                    console.log(`Noda / MSG / HM / Throw a cube`);
-                    message.channel.send(Math.ceil(Math.random() * 10)); 
-                } else if (regex.money.test(message.content)) {
-                    console.log(`Noda / MSG / HM / QN / Give some coins`);
-                    // give 100 coins
-                    coins += 100;
-                    let pushCoins = new RichEmbed()
-                    .setTitle(`Запрос халявных монеток`)
-                    .setColor(0x36D904)
-                    .setDescription(`
-                    Держи 100 монеток :moneybag:
-                    Чеканных монет: ${coins} 
-                    `);
-                    message.channel.send(pushCoins);
-                } else {
-                    message.channel.send('Не надо мной командовать, окей?!');
-                }
-            } else {
-                // "Нода ..." или "!..."
-                if (regex.question.test(message.content)) {
+                } else if (regex.question.test(message.content)) {
                     console.log(`Noda / MSG / HM / QN / Question to Noda`);
                     console.log(`Noda / MSG / HM / QN / Find the question in DB`);
                     // find the closest questions in DB
                     console.time('Noda / MSG / HM / QN / Question search time');
-                    matched_questions = await query(queries.sql_find_question, [utils.stemming(message.content), uid]);
+                    matched_questions = await query(queries.sql_find_question, [utils.stemming(message.content), user.uid]);
                     console.timeEnd('Noda / MSG / HM / QN / Question search time');
                     console.time('Noda / MSG / HM / QN / Answer time');
                     // if questions exist
@@ -346,12 +181,11 @@ bot.on('message', async message => {
                                 }
                                 if(score && qus['score']/score < 0.7) {
                                     break;
-                                } else if(qus['type'] === 1 && qus['user_id'] === uid) {
+                                } else if(qus['type'] === 1) {
                                     ans = qus['answer'];
                                     break;
                                 }
                             }
-
                             // just in case
                             if(!ans) ans = 'ой';
 
@@ -392,31 +226,31 @@ bot.on('message', async message => {
                 }
                 // update coins, exp and lvl
                 console.log(`Noda / MSG / HM / Add coins, exp and upd lvl`);
-                coins += 1;
-                exp += 1;
-                if (exp >= lvl * 5) {
-                    exp = 0;
-                    lvl += 1;
+                user.coins += 1;
+                user.exp += 1;
+                if (user.exp >= user.lvl * 5) {
+                    user.exp = user.exp - user.lvl * 5;
+                    user.lvl += 1;
                 }
             }
 
             // update user info in DB
             console.log(`Noda / MSG / HM / Update user data in DB`);
             console.time(`Noda / MSG / HM / Update user data time`);
-            await query(queries.sql_upd_user_info, [coins, exp, lvl, question_num, uid]);
+            await query(queries.sql_upd_user_info, [user.coins, user.exp, user.lvl, user.questions, user.uid]);
             // if the user created a question
-            if (question && answer) {
+            if (user.question && user.answer) {
                 console.log(`Noda / MSG / HM / Add bought question into DB`);
                 // add question to table questions
-                var add_question = await query(queries.sql_add_question, [utils.stemming(question)]);
-                var question_id = add_question.insertId;
+                let add_question = await query(queries.sql_add_question, [utils.stemming(user.question)]);
+                let question_id = add_question.insertId;
     
                 // add answer to table answers
-                add_answer = await query(queries.sql_add_answer, [answer]);
-                var answer_id = add_answer.insertId;
+                let add_answer = await query(queries.sql_add_answer, [user.answer]);
+                let answer_id = add_answer.insertId;
 
                 // link added question and added answer in table conn_quest_ans
-                await query(queries.sql_connect_question, [question_id, answer_id, uid, question_type]);
+                await query(queries.sql_connect_question, [question_id, answer_id, user.uid, user.question_type]);
             }
             console.timeEnd(`Noda / MSG / HM / Update user data time`);
         }

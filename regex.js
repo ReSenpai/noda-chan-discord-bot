@@ -10,7 +10,7 @@ const money = new RegExp(prefix + 'монетки$', 'i');
 const personal_question = /^личный$/i;
 const common_question = /^общий$/i;
 const noda = /^нода$/i;
-const question = /^нода|^!/i;
+const question = /^нода/i;
 
 
 module.exports.buy_question = buy_question;
