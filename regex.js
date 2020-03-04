@@ -13,14 +13,4 @@ const noda = /^нода$/i;
 const question = /^нода/i;
 
 
-module.exports.buy_question = buy_question;
-module.exports.buy_common_question = buy_common_question;
-module.exports.buy_personal_question = buy_personal_question;
-module.exports.just_question = just_question;
-module.exports.show_profile = show_profile;
-module.exports.personal_question = personal_question;
-module.exports.common_question = common_question;
-module.exports.noda = noda;
-module.exports.question = question;
-module.exports.cube = cube;
-module.exports.money = money;
+module.exports = {buy_question, buy_common_question, buy_personal_question, just_question, show_profile, personal_question, common_question, question, noda, cube, money};
