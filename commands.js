@@ -3,7 +3,7 @@ const { Attachment, RichEmbed, Emoji, Guild, Client } = require('discord.js');
 
 function executeCommand(message, user) {
     // Buy questions guide
-    if(regex.buy_question.test(message.content)){
+    if (regex.buy_question.test(message.content)) {
         console.log(`Noda / MSG / HM / Buy question info`);
         const shop = new RichEmbed()
             .setTitle(`Нода-шоп!`)
@@ -18,7 +18,7 @@ function executeCommand(message, user) {
             `);
         message.channel.send(shop);
     // Buy common_questions guide
-    } else if(regex.buy_common_question.test(message.content)){
+    } else if (regex.buy_common_question.test(message.content)) {
         console.log(`Noda / MSG / HM / Buy common question info`);
         if(coins >= 25){
             const commonQuestion = new RichEmbed()
@@ -40,7 +40,7 @@ function executeCommand(message, user) {
             message.channel.send(commonQuestionFalse);
         }  
     // Buy personal_question guide 
-    } else if(regex.buy_personal_question.test(message.content)){
+    } else if (regex.buy_personal_question.test(message.content)) {
         console.log(`Noda / MSG / HM / Buy personal question info`);
         if(coins >= 100){
             let plate = new RichEmbed()
@@ -62,7 +62,7 @@ function executeCommand(message, user) {
             message.channel.send(plate_false);
         }  
     // buy questions with code
-    } else if(regex.just_question.test(message.content)){
+    } else if (regex.just_question.test(message.content)) {
         console.log(`Noda / MSG / HM / BQ / Buy a question!`);
         let args = message.content.split(" [");
         if (user.coins >= 25 && args.length >= 2) {
@@ -71,12 +71,12 @@ function executeCommand(message, user) {
             user.answer = args[2].slice(0, -1);
             try {
                 user.question_type = args[3].slice(0, -1);
-            } catch(error) {
+            } catch (error) {
                 user.question_type = 0;
             }
             console.log(`Noda / MSG / HM / BQ / Question type ${user.question_type}`);
-            if(regex.personal_question.test(user.question_type)){
-                if(user.coins >= 100) {
+            if (regex.personal_question.test(user.question_type)) {
+                if (user.coins >= 100) {
                     console.log(`Noda / MSG / HM / BQ / Personal question was bought`);
                     user.question_type = 1;
                     user.coins -= 100;
@@ -85,7 +85,7 @@ function executeCommand(message, user) {
                     bot.send(`Не хватает чеканных монет для покупки личного вопроса.\nВаш баланс: ${user.coins} монет!`)
                     return;
                 }
-            } else if(user.question_type === 0 || common_question.test(user.question_type)){
+            } else if (user.question_type === 0 || common_question.test(user.question_type)) {
                 console.log(`Noda / MSG / HM / BQ / Common question was bought`);
                 user.question_type = 0;
                 user.coins -= 25;
@@ -148,7 +148,7 @@ function executeCommand(message, user) {
             message.channel.send(embed);
         }
     // Throw a cube
-    } else if(regex.cube.test(message.content)) {
+    } else if (regex.cube.test(message.content)) {
         console.log(`Noda / MSG / HM / Throw a cube`);
         message.channel.send(Math.ceil(Math.random() * 10)); 
     } else if (regex.money.test(message.content)) {

@@ -69,6 +69,7 @@ bot.on('message', async message => {
         console.time('Noda / MSG / TIME');
         console.log('===================================================');
         console.log('Noda / MSG / Handle new message');
+
         // don't handle messages from bots
         if(message.author.bot)
         {
@@ -121,7 +122,9 @@ bot.on('message', async message => {
             // system commands
             console.log('Noda / MSG / HM / Handle message');
             if(message.content[0] === '!') {
+                console.time('Noda / MSG / Execute command');
                 user = commands.exec(message, user);
+                console.timeEnd('Noda / MSG / Execute command');
             } else {
                 // "Нода ..."
                 if(regex.noda.test(message.content)){
