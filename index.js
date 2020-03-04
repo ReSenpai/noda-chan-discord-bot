@@ -13,26 +13,9 @@ const util = require('util');
 // mysql queries
 const queries = require('./sql_queries');
 // language processing library
-const natural = require('natural');
 const regex = require('./regex')
 const utils = require('./utils')
 const commands = require('./commands');
-
-
-// require modules
-// fs.readdir('./modules/', (err,files) => {
-//     if(err) console.log(err);
-//     let jsfiles = files.filter(f => f.split(".").pop() === "js");
-//     if(jsfiles.length <=0) console.log("Noda / Nothing to load");
-//     console.log(`Noda / LM / Loading ${jsfiles.length} module(s)`);
-//     jsfiles.forEach((f,i) => {
-//         let props = require(`./modules/${f}`);
-//         console.log(`Noda / LM / ${f} module is loaded`);
-//         for(let i = 0; i < props.help.name.length; i++) {
-//             bot.commands.set(props.help.name[i],props);
-//         }
-//     });
-// });
 
 // bot vars
 const bot = new discord.Client();
@@ -260,14 +243,3 @@ bot.on('message', async message => {
         console.timeEnd('Noda / MSG / TIME');
     }
 });
-
-
-// Новый участник
-
-// bot.on('guildMemberAdd', member => {
-//     const channel = member.guild.channels.find(ch => ch.name === 'member-log');
-
-//     if (!channel) return;
-//     channel.send(`Добро пожаловать на сервер, ${member}`);
-// });
-
