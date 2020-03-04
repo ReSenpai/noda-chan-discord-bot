@@ -104,7 +104,7 @@ bot.on('message', async message => {
             console.log('Noda / MSG / HM / Handle message');
             if(message.content[0] === '!') {
                 console.time('Noda / MSG / Execute command');
-                user = commands.exec(message, user);
+                user = commands.exec(message, user, query);
                 console.timeEnd('Noda / MSG / Execute command');
             } else {
                 // "Нода ..."
