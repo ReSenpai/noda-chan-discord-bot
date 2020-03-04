@@ -71,7 +71,7 @@ const prefix = config.prefix;
 // regex
 const buy_question = new RegExp(prefix + '\\купить вопрос$','i');
 const buy_common_question = new RegExp(prefix + '\\общий вопрос$','i');
-const buy_personal_question = new RegExp(prefix + '\\личный вопрос$','i');
+const buy_personal_question = new RegExp(prefix + '\\личный вопрос$|купить личный$|купить личный вопрос$','i');
 const just_question = new RegExp(prefix + '\\вопрос','i');
 const show_profile = new RegExp(prefix + '\\профиль$|^нода покажи мой профиль','i');
 const personal_question = /^личный$/i;
@@ -409,7 +409,6 @@ bot.on('message', async message => {
                                     console.log(matched_questions);
                                 }
                                 console.log(`Noda / MSG / HM / QN / Choose the top answer`);
-                                ans = matched_questions[0]['answer'];
                                 if(type === 1) {
                                    if(uid == check_id) {
                                         const filter_type = matched_questions.filter(person => {
@@ -424,7 +423,12 @@ bot.on('message', async message => {
                                                 return true;
                                             }
                                         })
-                                        ans = filter_type[0]['answer'];
+                                        let max_score = parseFloat(filter_type[0]['score']);
+                                        if (max_score > 0) {
+                                            ans = filter_type[0]['answer'];
+                                        } else {
+                                            ans = 'Чот я ничего не поняла';
+                                        }   
                                    }
                                 } else {
                                     ans = matched_questions[0]['answer'];
