@@ -1,4 +1,5 @@
 console.log('Noda / Start...');
+
 // require
 // discord bot library
 const discord = require('discord.js');
@@ -25,26 +26,24 @@ bot.commands = new discord.Collection();
 console.log('Noda / Login bot');
 bot.login(config.token);
 
-// bot.on('ready', async () => {
-//     bot.generateInvite(["ADMINISTRATOR"]).then(link => {
-//         console.log(`Noda / Invite link: ${link}`);
-//     }).catch(err => {
-//         console.log(err.stack);
-//     })
-// });
-
+bot.on('ready', async () => {
+    bot.generateInvite(["ADMINISTRATOR"]).then(link => {
+        console.log(`Noda / Invite link: ${link}`);
+    }).catch(err => {
+        console.log(err.stack);
+    })
+});
 console.log('Noda / Bot initialized');
 
 // connect to DB
 console.log('Noda / MSG / Create MySQL connection');
 // create pool connection
 let connection  = mysql.createPool(config.DB);
-
 // make MySQL query async-await
 const query = util.promisify(connection.query).bind(connection);
 
+// handle messages
 console.log('Noda / MSG / Start listening');
-// Handle messages
 bot.on('message', async message => {
     try {
         console.time('Noda / MSG / TIME');
@@ -58,9 +57,6 @@ bot.on('message', async message => {
             return;
         }
         console.log(`Noda / MSG / Message text: '${message.content}'`);
-            
-        // don't handle direct messages
-        // if(message.channel.type === "dm") return;
     
         // user info from discord
         const uid = message.author.id;
@@ -68,7 +64,7 @@ bot.on('message', async message => {
         try {
             nickname = message.member.nickname;
         } catch (error) {
-        // name for direct questions
+            // name for direct questions
             nickname = 'whisperer';
         }
         const username = message.author.username;
@@ -106,40 +102,12 @@ bot.on('message', async message => {
                 console.time('Noda / MSG / Execute command');
                 user = commands.exec(message, user, query);
                 console.timeEnd('Noda / MSG / Execute command');
+            // question to Noda
             } else {
                 // "Нода ..."
                 if(regex.noda.test(message.content)){
                     console.log(`Noda / MSG / HM / Bot's name`);
-                    let randomNumber = Math.ceil(Math.random() * 10);
-                    switch(randomNumber){
-                        case 1:
-                            message.channel.send('Шито?');
-                            break;
-                        case 2:
-                            message.channel.send('Отстань, я занята...');
-                            break;
-                        case 3:
-                            message.channel.send('Ну шо такое?');
-                            break;
-                        case 4:
-                            message.channel.send('Хватит меня звать ._.');
-                            break;
-                        case 5:
-                            message.channel.send('Ваще то моё полное имя - Нода тян');
-                            break;
-                        case 6:
-                            message.channel.send('Ась?');
-                            break;
-                        case 7:
-                            message.channel.send('Шо надо то?');
-                            break;
-                        case 8:
-                            message.channel.send('Слушаю:3');
-                            break;
-                        case 9:
-                            message.channel.send('Как банный лист пристал...');
-                            break;
-                    }
+                    message.channel.send(utils.rndAnswer(utils.nodaAnsw));
                 } else if (regex.question.test(message.content)) {
                     console.log(`Noda / MSG / HM / QN / Question to Noda`);
                     console.log(`Noda / MSG / HM / QN / Find the question in DB`);
@@ -183,24 +151,7 @@ bot.on('message', async message => {
                             console.log(`Noda / MSG / HM / QN / No matches with questions in DB`);
                             console.log(`Noda / MSG / HM / QN / Choose a random answer`);
                             // no similar questions in DB
-                            let randomNumber = Math.ceil(Math.random() * 5);
-                            switch(randomNumber){
-                                case 1:
-                                    ans = 'Cложно, сложно, ни**я не понятно.';
-                                    break;
-                                case 2:
-                                    ans = 'Чееего *лять?';
-                                    break;
-                                case 3:
-                                    ans = 'Ни**я не поняла, но очень интересно:3';
-                                    break;
-                                case 4:
-                                    ans = 'Чот я ничего не поняла';
-                                    break;
-                                case 5:
-                                    ans = 'А можно помедленее? Я записываю...';
-                                    break;
-                            }
+                            ans = utils.rndAnswer(utils.confusedAnsw);
                         }
                         console.log(`Noda / MSG / HM / QN / Сhosen answer: '${ans}'`);
                         // answer
