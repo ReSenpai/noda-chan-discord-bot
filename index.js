@@ -12,31 +12,31 @@ const mysql = require('mysql');
 const util = require('util');
 // mysql queries
 const queries = require('./sql_queries.json');
-// language processing library
-var natural = require('natural');
+// russian stemming
+const stemming = require('./russian_stemming.js');
 
 // require modules
 fs.readdir('./modules/',(err,files)=>{
     if(err) console.log(err);
-    let jsfiles = files.filter(f => f.split(".").pop() === "js");
+    const jsfiles = files.filter(f => f.split(".").pop() === "js");
     if(jsfiles.length <=0) console.log("Noda / Nothing to load");
     console.log(`Noda / LM / Loading ${jsfiles.length} module(s)`);
     jsfiles.forEach((f,i) =>{
-        let props = require(`./modules/${f}`);
+        const props = require(`./modules/${f}`);
         console.log(`Noda / LM / ${f} module is loaded`);
         for(let i = 0; i < props.help.name.length; i++){
             bot.commands.set(props.help.name[i],props);
         }
     });
+    console.log('Noda / All modules are connected');
 });
-
-console.log('Noda / All modules are connected');
 
 // bot vars
 const bot = new Discord.Client();
 bot.commands = new Discord.Collection();
 const token = config.token;
 const prefix = config.prefix;
+const clog = (log) => console.log(log); // alias console.log();
 
 // regex
 const buy_question = new RegExp(prefix + '\\купить вопрос$','i');
@@ -48,8 +48,8 @@ const personal_question = /^личный$/i;
 const common_question = /^общий$/i;
 
 // login bot
-console.log('Noda / Loging bot');
 bot.login(token);
+console.log('Noda / Loging bot');
 
 // bot.on('ready', async () => {
 //     bot.generateInvite(["ADMINISTRATOR"]).then(link => {
@@ -61,23 +61,10 @@ bot.login(token);
 
 console.log('Noda / Bot initialized');
 
-// russian stemming
-var tokenizer = new natural.WordTokenizer();
-function stemming(str) {
-    let words = tokenizer.tokenize(str);
-    let stems = [];
-    for (word of words) {
-        stems.push(natural.PorterStemmerRu.stem(word));
-    }
-    str_stemmed = stems.join(' ')
-    console.log(`Noda / Stemmed / ${str_stemmed}`);
-    return str_stemmed;
-}
-
 // connect to DB
 console.log('Noda / MSG / Create MySQL connection');
 // create pool connection
-let connection  = mysql.createPool({
+const connection  = mysql.createPool({
     connectionLimit:    10,
     host:               config.DB.host,
     user:               config.DB.user,
@@ -116,12 +103,12 @@ bot.on('message', async message => {
         try {
             nickname = message.member.nickname;
         } catch (error) {
-            // name for direct questions
+        // name for direct questions
             nickname = 'whisperer';
         }
         const username = message.author.username;
     
-        // unused?
+        // alias message.channel.send
         bot.send = function(msg) {
             message.channel.send(msg)
         }
@@ -150,6 +137,18 @@ bot.on('message', async message => {
             let answer = null;
             console.log(`Noda / MSG / User data: \n\tuser_name: '${username}'\n\tnickname: '${nickname}'` + 
                 `\n\tuser_id: '${uid}'\n\tcoins: '${coins}'\n\tlvl: '${lvl}'\n\texp: '${exp}'\n\tquestions: '${question_num}'`);
+
+            // let messageArray = message.content.split(" ");
+            // let command = messageArray[0].toLowerCase();
+            // let args = messageArray.slice(1);
+            // if(!message.content.startsWith(prefix)) return;
+            // let cmd = bot.commands.get(command.slice(prefix.length));
+            // if(cmd) cmd.run(bot,message,args);
+            // bot.rUser = message.guild.member(message.mentions.users.first() || message.guild.members.get(args[0]));
+            // bot.uId = message.author.id;
+            // if (message.content === 'куун') {
+            //     message.channel.send('Да да...до вечера ._.');
+            // }
             
             // system commands
             console.log('Noda / MSG / HM / Handle message');
@@ -158,31 +157,31 @@ bot.on('message', async message => {
                 let randomNumber = Math.ceil(Math.random() * 10);
                 switch(randomNumber){
                     case 1:
-                        message.channel.send('Шито?');
+                        bot.send('Шито?');
                         break;
                     case 2:
-                        message.channel.send('Отстань, я занята...');
+                        bot.send('Отстань, я занята...');
                         break;
                     case 3:
-                        message.channel.send('Ну шо такое?');
+                        bot.send('Ну шо такое?');
                         break;
                     case 4:
-                        message.channel.send('Хватит меня звать ._.');
+                        bot.send('Хватит меня звать ._.');
                         break;
                     case 5:
-                        message.channel.send('Ваще то моё полное имя - Нода тян');
+                        bot.send('Ваще то моё полное имя - Нода тян');
                         break;
                     case 6:
-                        message.channel.send('Ась?');
+                        bot.send('Ась?');
                         break;
                     case 7:
-                        message.channel.send('Шо надо то?');
+                        bot.send('Шо надо то?');
                         break;
                     case 8:
-                        message.channel.send('Слушаю:3');
+                        bot.send('Слушаю:3');
                         break;
                     case 9:
-                        message.channel.send('Как банный лист пристал...');
+                        bot.send('Как банный лист пристал...');
                         break;
                 }
                 // Buy questions guide
@@ -199,7 +198,7 @@ bot.on('message', async message => {
                     Для покупки общего вопроса напишите: !общий вопрос
                     Для покупки личного вопроса напишите: !личный вопрос
                     `);
-                message.channel.send(shop);
+                bot.send(shop);
                 // Buy common_questions guide
             } else if(buy_common_question.test(message.content)){
                 console.log(`Noda / MSG / HM / Buy common question info`);
@@ -212,7 +211,7 @@ bot.on('message', async message => {
                     Для покупки вопроса напишите или лучше скопируйте как шаблон:
                     !вопрос [Тут пишите ваш вопрос, обязательно в квадратных скобочках] [А тут ваш ответ, так же в квадратных скобочках]
                     `);
-                    message.channel.send(commonQuestion);
+                    bot.send(commonQuestion);
                 } else {
                     const commonQuestionFalse = new RichEmbed()
                     .setTitle(`Отказано.`)
@@ -220,7 +219,7 @@ bot.on('message', async message => {
                     .setDescription(`
                     Не хватает чеканных монет, ваш баланс: ${coins}
                     `);
-                    message.channel.send(commonQuestionFalse);
+                    bot.send(commonQuestionFalse);
                 }  
                 // Buy personal_question guide 
             } else if(buy_personal_question.test(message.content)){
@@ -234,7 +233,7 @@ bot.on('message', async message => {
                     Для покупки вопроса напишите или лучше скопируйте как шаблон:
                     !вопрос [Тут пишите ваш вопрос, обязательно в квадратных скобочках] [А тут ваш ответ, так же в квадратных скобочках] [личный]
                     `);
-                    message.channel.send(plate);
+                    bot.send(plate);
                 } else {
                     let plate_false = new RichEmbed()
                     .setTitle(`Отказано.`)
@@ -242,7 +241,7 @@ bot.on('message', async message => {
                     .setDescription(`
                     Не хватает чеканных монет, ваш баланс: ${coins}
                     `);
-                    message.channel.send(plate_false);
+                    bot.send(plate_false);
                 }  
             // buy questions with code
             } else if(just_question.test(message.content)){
@@ -297,10 +296,10 @@ bot.on('message', async message => {
                     Осталось чеканных монет: ${coins}
                     Приятного использования😘
                     `);
-                    message.channel.send(commonQuestionBye);
+                    bot.send(commonQuestionBye);
                 } else {
                     console.log(`Noda / MSG / HM / Not enough money for a common question`);
-                    message.channel.send(`${args.length >= 2 ? 'Не хватает чеканных монет, ваш баланс:' + coins : 'Вы неправильно написали шаблон для покупки вопроса, можете посмотреть правильные шаблоны, написав "!купить общий вопрос" или "!купить личный вопрос"'}`);
+                    bot.send(`${args.length >= 2 ? 'Не хватает чеканных монет, ваш баланс:' + coins : 'Вы неправильно написали шаблон для покупки вопроса, можете посмотреть правильные шаблоны, написав "!купить общий вопрос" или "!купить личный вопрос"'}`);
                 }
             // Show profiles
             } else if (show_profile.test(message.content)) {
@@ -316,7 +315,7 @@ bot.on('message', async message => {
                     :key:Общих вопросов куплено: ${question_num}
                     `)
                     .setThumbnail(avatar)
-                    message.channel.send(embed);
+                    bot.send(embed);
                 } else {
                     let embed = new RichEmbed()
                     .setTitle(`Профиль игрока: ${nickname}`)
@@ -328,12 +327,12 @@ bot.on('message', async message => {
                     :key:Общих вопросов куплено: ${question_num}
                     `)
                     .setThumbnail(avatar)
-                    message.channel.send(embed);
+                    bot.send(embed);
                 }
             // Throw a cube
             } else if(message.content === '!кубик') {
                 console.log(`Noda / MSG / HM / Throw a cube`);
-                message.channel.send(Math.ceil(Math.random() * 10)); 
+                bot.send(Math.ceil(Math.random() * 10)); 
             } else {
                 // "Нода ..." или "!..."
                 if (/^Нода|^!/i.test(message.content)) {
@@ -350,7 +349,7 @@ bot.on('message', async message => {
                         Держи 100 монеток :moneybag:
                         Чеканных монет: ${coins} 
                         `);
-                        message.channel.send(pushCoins);
+                        bot.send(pushCoins);
                     } else {
                         console.log(`Noda / MSG / HM / QN / Find the question in DB`);
                         // find the closest questions in DB
@@ -390,11 +389,6 @@ bot.on('message', async message => {
                                     if(inx >= 3) return;
                                     console.log(`\t${inx+1}. (${elem.score.toFixed(4)}) '${elem.question}' -- '${elem.answer}' -- ${elem.type}`);
                                 })
-                                // if(matched_questions.length > 3) {
-                                //     console.log(matched_questions.slice(0, 3));
-                                // } else {
-                                //     console.log(matched_questions);
-                                // }
                             } else {
                                 console.log(`Noda / MSG / HM / QN / No matches with questions in DB`);
                                 console.log(`Noda / MSG / HM / QN / Choose a random answer`);
@@ -421,7 +415,7 @@ bot.on('message', async message => {
                             console.log(`Noda / MSG / HM / QN / Сhosen answer: '${ans}'`);
                             // answer
                             console.timeEnd('Noda / MSG / HM / QN / Answer time');
-                            message.channel.send(ans);
+                            bot.send(ans);
                         }
                     }
                 }
