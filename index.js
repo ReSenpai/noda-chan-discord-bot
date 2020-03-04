@@ -386,11 +386,15 @@ bot.on('message', async message => {
 
                                 // log top 3 matched questions
                                 console.log(`Noda / MSG / HM / QN / Top 3 matched questions`);
-                                if(matched_questions.length > 3) {
-                                    console.log(matched_questions.slice(0, 3));
-                                } else {
-                                    console.log(matched_questions);
-                                }
+                                matched_questions.forEach(function(elem, inx){
+                                    if(inx >= 3) return;
+                                    console.log(`\t${inx+1}. (${elem.score.toFixed(4)}) '${elem.question}' -- '${elem.answer}' -- ${elem.type}`);
+                                })
+                                // if(matched_questions.length > 3) {
+                                //     console.log(matched_questions.slice(0, 3));
+                                // } else {
+                                //     console.log(matched_questions);
+                                // }
                             } else {
                                 console.log(`Noda / MSG / HM / QN / No matches with questions in DB`);
                                 console.log(`Noda / MSG / HM / QN / Choose a random answer`);
