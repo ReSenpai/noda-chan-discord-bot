@@ -1,6 +1,6 @@
 const regex = require('./regex')
 const utils = require('./utils')
-const queries = require('./sql_queries');
+const queries = require('./queries');
 const { Attachment, RichEmbed, Emoji, Guild, Client } = require('discord.js');
 
 async function handleQuestion(message, user, query) {
@@ -67,7 +67,6 @@ async function handleQuestion(message, user, query) {
         user.exp = user.exp - user.lvl * 5;
         user.lvl += 1;
     }
-    return user;
 }
 
 module.exports.handle = handleQuestion;

@@ -124,7 +124,7 @@ async function executeCommand(message, user, query) {
         console.log(`Noda / MSG / HM / Show profiles`);
         try {
             let embed = new RichEmbed()
-            .setTitle(`Профиль игрока: ${user.nickname}`)
+            .setTitle(`Профиль игрока: ${user.server_name}`)
             .setColor(0x0a4bff)
             .setDescription(`
             :trophy:LVL: ${user.lvl}
@@ -136,7 +136,7 @@ async function executeCommand(message, user, query) {
             message.channel.send(embed);
         } catch (error) {
             let embed = new RichEmbed()
-            .setTitle(`Профиль игрока: ${user.username}`)
+            .setTitle(`Профиль игрока: ${user.user_name}`)
             .setColor(0x0a4bff)
             .setDescription(`
             :trophy:LVL: ${user.lvl}
@@ -166,7 +166,6 @@ async function executeCommand(message, user, query) {
     } else {
         message.channel.send('Не надо мной командовать, окей?!');
     }
-    return user;
 }
 
 module.exports.exec = executeCommand;

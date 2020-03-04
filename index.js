@@ -1,6 +1,5 @@
 console.log('Noda / Start...');
 
-// require
 // discord bot library
 const discord = require('discord.js');
 // program config
@@ -10,7 +9,7 @@ const mysql = require('mysql');
 // library for making queries asinc-await
 const util = require('util');
 // mysql queries
-const queries = require('./sql_queries');
+const queries = require('./queries');
 // language processing library
 const utils = require('./utils')
 const commands = require('./commands');
@@ -24,6 +23,7 @@ bot.commands = new discord.Collection();
 console.log('Noda / Login bot');
 bot.login(config.token);
 
+// get invite link
 bot.on('ready', async () => {
     bot.generateInvite(["ADMINISTRATOR"]).then(link => {
         console.log(`Noda / Invite link: ${link}`);
@@ -58,14 +58,14 @@ bot.on('message', async message => {
     
         // user info from discord
         const uid = message.author.id;
-        let nickname = '';
+        let server_name = '';
         try {
-            nickname = message.member.nickname;
+            server_name = message.member.nickname;
         } catch (error) {
             // name for direct questions
-            nickname = 'whisperer';
+            server_name = 'whisperer';
         }
-        const username = message.author.username;
+        const user_name = message.author.username;
     
         // alias message.channel.send
         bot.send = function(msg) {
@@ -75,7 +75,7 @@ bot.on('message', async message => {
         console.time('Noda / MSG / Get user info time');
         // add user if needed
         console.log('Noda / MSG / Add user into DB if needed ( may not handle nick change )');
-        await query(queries.sql_add_user, [uid, username, nickname]);
+        await query(queries.sql_add_user, [uid, user_name, server_name]);
 
         // get user info from DB
         console.log('Noda / MSG / Get user info from DB');
@@ -85,25 +85,23 @@ bot.on('message', async message => {
         if (user_data) {
             // user data
             console.log('Noda / MSG / Parse user info');
-            let user = Object.assign({}, user_data[0]);
-            user.uid = uid;
-            user.avatar = message.author.avatarURL;
-            user.question = null;
-            user.answer = null;
-            user.question_type = null;
-            console.log(`Noda / MSG / User info: \n\tuser_name: '${user.username}'\n\tnickname: '${user.nickname}'` + 
-                `\n\tuser_id: '${user.uid}'\n\tcoins: '${user.coins}'\n\tlvl: '${user.lvl}'\n\texp: '${user.exp}'\n\tquestions: '${user.question_num}'`);
+            user_disc = {uid, avatar: message.author.avatarURL, question: null, answer: null, question_type: null};
+            let user = Object.assign(user_disc, user_data[0]);
+
+            // log user info
+            console.log(`Noda / MSG / User info: \n\tuser_name: '${user.user_name}'\n\tnickname: '${user.server_name}'` + 
+                `\n\tuser_id: '${user.uid}'\n\tcoins: '${user.coins}'\n\tlvl: '${user.lvl}'\n\texp: '${user.exp}'\n\tquestions: '${user.questions}'`);
             
             // system commands
             console.log('Noda / MSG / HM / Handle message');
             if(message.content[0] === '!') {
                 console.time('Noda / MSG / Execute command time');
-                user = await commands.exec(message, user, query);
+                await commands.exec(message, user, query);
                 console.timeEnd('Noda / MSG / Execute command time');
             // question to Noda
             } else {
                 console.time('Noda / MSG / Full answer time');
-                user = await quest.handle(message, user, query);
+                await quest.handle(message, user, query);
                 console.timeEnd('Noda / MSG / Full answer time');
             }
 
