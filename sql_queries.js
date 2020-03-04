@@ -26,8 +26,8 @@ const sql_connect_question =
 const sql_find_question = 
 `SELECT questions.text AS question, answers.text AS answer, type, user_id, 
     MATCH (questions.text) AGAINST (? IN BOOLEAN MODE) AS score 
-    FROM questions JOIN conn_quest_ans 
-    ON questions.question_id = conn_quest_ans.question_id AND (type = 0 OR user_id = ?) 
+    FROM questions 
+    JOIN conn_quest_ans ON questions.question_id = conn_quest_ans.question_id AND (type = 0 OR user_id = ?) 
     JOIN answers USING (answer_id) 
     ORDER BY score 
     DESC LIMIT 100`;

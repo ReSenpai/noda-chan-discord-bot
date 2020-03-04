@@ -32,4 +32,21 @@ function rndAnswer(answers) {
     return answers[Math.ceil(Math.random() * answers.length)];
 }
 
-module.exports = {stemming, nodaAnsw, confusedAnsw, rndAnswer};
+async function updUserInfo(message, user, query) {
+    // if the user created a question
+    if (user.question && user.answer) {
+        console.log(`Noda / MSG / HM / Add bought question into DB`);
+        // add question to table questions
+        let add_question = await query(queries.sql_add_question, [utils.stemming(user.question)]);
+        let question_id = add_question.insertId;
+
+        // add answer to table answers
+        let add_answer = await query(queries.sql_add_answer, [user.answer]);
+        let answer_id = add_answer.insertId;
+
+        // link added question and added answer in table conn_quest_ans
+        query(queries.sql_connect_question, [question_id, answer_id, user.uid, user.question_type]);
+    }
+}
+
+module.exports = {stemming, nodaAnsw, confusedAnsw, rndAnswer, updUserInfo};
