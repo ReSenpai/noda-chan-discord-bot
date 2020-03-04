@@ -1,4 +1,5 @@
 const natural = require('natural');
+const queries = require('./queries');
 
 // russian stemming
 var tokenizer = new natural.WordTokenizer();
@@ -37,7 +38,7 @@ async function updUserInfo(message, user, query) {
     if (user.question && user.answer) {
         console.log(`Noda / MSG / HM / Add bought question into DB`);
         // add question to table questions
-        let add_question = await query(queries.sql_add_question, [utils.stemming(user.question)]);
+        let add_question = await query(queries.sql_add_question, [stemming(user.question)]);
         let question_id = add_question.insertId;
 
         // add answer to table answers

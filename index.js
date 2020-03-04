@@ -73,8 +73,7 @@ bot.on('message', async message => {
         if (user_data) {
             // user data
             console.log('Noda / MSG / Parse user info');
-            user_quest = { question: null, answer: null, question_type: null };
-            user = {...user_data[0], ...user, ...user_quest};
+            user = {...user_data[0], ...user, question: null, answer: null, question_type: null};
 
             // log user info
             console.log(`Noda / MSG / User info: \n\tuser_name: '${user.user_name}'\n\tnickname: '${user.server_name}'` + 
@@ -82,16 +81,14 @@ bot.on('message', async message => {
             
             // system commands
             console.log('Noda / MSG / HM / Handle message');
+            console.time('Noda / MSG / HM / Handle message time');
             if(message.content[0] === '!') {
-                console.time('Noda / MSG / Execute command time');
                 await commands.exec(message, user, query);
-                console.timeEnd('Noda / MSG / Execute command time');
             // question to Noda
             } else {
-                console.time('Noda / MSG / Full answer time');
                 await quest.handle(message, user, query);
-                console.timeEnd('Noda / MSG / Full answer time');
             }
+            console.timeEnd('Noda / MSG / HM / Handle message time');
 
             // update user info in DB
             console.log(`Noda / MSG / HM / Update user data in DB`);
