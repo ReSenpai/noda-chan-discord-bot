@@ -3,21 +3,60 @@ const actions = black_jack.actions;
 const Game = black_jack.Game;
 const prompt = require('prompt-sync')({sigint: true});
 
+function visualizeCart(cart) {
+    let suite = '';
+    switch(cart.suite) {
+        case 'diamonds':
+            suite = '♦';
+            break;
+        case 'hearts':
+            suite = '♥';
+            break;
+        case 'clubs':
+            suite = '♣';
+            break;
+        case 'spades':
+            suite = '♠';
+            break;
+    }
+    return `${suite}${cart.text}`;
+}
+
+function visualizeHand(hand) {
+    hand_text = '';
+    for(let cart of hand) {
+        hand_text += visualizeCart(cart) + ' ';
+    }
+    return hand_text.slice(0, -1);;
+}
+
+function getHandScore(hand) {
+    let score = 0;
+    for(let cart of hand) {
+        score += cart.value;
+    }
+    return score;
+}
+
 const game = new Game();
 while(true) {
     let state = game.getState();
     // console.log('==========================================================');
     // console.dir(state);
     console.log('==========================================================');
-    console.log(`stage: ${state.stage}, won: ${state.wonOnRight}, final win: ${state.finalWin}, initial bet: ${state.initialBet}, final bet: ${state.finalBet}`)
-    console.log('Your hand: ')
-    console.log(state.handInfo.right.cards);
-    console.log('Dealer hand: ')
-    console.log(state.dealerCards);
-    // console.log('Dealer hole card: ');
-    // console.log(state.dealerHoleCard);
+    console.log(`Your bet is ${state.finalBet}`)
+    let yourHand = state.handInfo.right.cards;
+    let dealerHand = state.dealerCards
+    if(dealerHand) {
+        console.log(`Dealer hand (${getHandScore(dealerHand)}): `)
+        console.log(visualizeHand(dealerHand));
+    }
+    if(yourHand) {
+        console.log(`Your hand (${getHandScore(yourHand)}): `)
+        console.log(visualizeHand(yourHand));
+    }
     if(state.stage === 'done') {
-        console.log(`GAME HAS ENDED YOUR REWARD IS ${state.wonOnRight}`);
+        console.log(`GAME HAS ENDED YOUR REWARD IS ${state.wonOnRight}$`);
         break;
     }
 
