@@ -44,7 +44,7 @@ while(true) {
     // console.log('==========================================================');
     // console.dir(state);
     console.log('==========================================================');
-    console.log(`Your bet is ${state.finalBet}`)
+    console.log(`Your bet is ${state.finalBet?state.finalBet:state.initialBet}`)
     let yourHand = state.handInfo.right.cards;
     let dealerHand = state.dealerCards
     if(dealerHand) {
