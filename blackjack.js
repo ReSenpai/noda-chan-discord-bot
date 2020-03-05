@@ -1,5 +1,4 @@
 const black_jack = require('engine-blackjack');
-const util = require('util');
 const actions = black_jack.actions;
 const Game = black_jack.Game;
 const prompt = require('prompt-sync')({sigint: true});
