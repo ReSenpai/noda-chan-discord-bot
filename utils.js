@@ -58,7 +58,7 @@ function getDiscordInfo(message, user, query) {
         user.server_name = message.member.nickname;
     } catch (error) {
         // name for direct questions
-        user.server_name = 'whisperer';
+        user.server_name = message.author.username;
     }
     user.user_name = message.author.username;
     user.avatar = message.author.avatarURL;
