@@ -180,8 +180,6 @@ async function executeCommand(message, user, query) {
             let num = words.length==3?parseInt(words[2]):-1;
             let turn = bj(cmd, num, state, user.coins);
             user.coins = turn.coins;
-            // message.channel.send();
-            // console.log(turn.str);
             let stateJSON = JSON.stringify(turn.state);
             query(queries.sql_upd_bj_state, [user.uid, stateJSON, stateJSON]);
             const bj_message = new RichEmbed()

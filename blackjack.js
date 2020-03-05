@@ -7,16 +7,20 @@ function visualizeCart(cart) {
     let suite = '';
     switch(cart.suite) {
         case 'diamonds':
-            suite = '\u2662';
+            suite = '\u2666';
+            //suite = '\u2662';
             break;
         case 'hearts':
-            suite = '\u2661';
+            suite = '\u2665';
+            //suite = '\u2661';
             break;
         case 'clubs':
-            suite = '\u2667';
+            suite = '\u2663';
+            //suite = '\u2667';
             break;
         case 'spades':
-            suite = '\u2664';
+            suite = '\u2660';
+            //suite = '\u2664';
             break;
     }
     return `${suite}${cart.text}`;
@@ -40,14 +44,14 @@ function getHandScore(hand) {
 
 function action(cmd, num, state, coins) {
     const game = new Game();
-    if(cmd == 'reset') {
+    if (cmd == 'reset') {
         state = {};
     } else if(state)
         game.setState(state);
     switch(cmd) {
         // раздать карты
         case 'deal':
-            if(num > 0 && coins >= num) {
+            if (num > 0 && coins >= num) {
                 game.dispatch(actions.deal({ bet: num, sideBets: { luckyLucky: 0 } }));
                 coins -= num;
             } else {
@@ -68,11 +72,16 @@ function action(cmd, num, state, coins) {
             break;
         // удвоить ставку после разлачи
         case 'double':
-            game.dispatch(actions.double('right'));
+            if (coins >= state.initialBet) {
+                coins -= state.initialBet;
+                game.dispatch(actions.double('right'));
+            } else {
+                console.log('Not enough coins');
+            }
             break;
         // застраховать руку, если диллеру пришел туз первой картой
         case 'insurance':
-            if(num >= 0)
+            if (num >= 0)
                 game.dispatch(actions.insurance(num));
             else
                 console.log('incorrect ammount');
@@ -82,12 +91,13 @@ function action(cmd, num, state, coins) {
     let bet = state.finalBet?state.finalBet:state.initialBet;
     let dealerHand = state.dealerCards?visualizeHand(state.dealerCards):'No carts';
     let yourHand = state.handInfo.right.cards?visualizeHand(state.handInfo.right.cards):'No carts';
-    let str = `Bet: ${bet}\nNoda:\n\t${dealerHand}\nYou:\n\t${yourHand}`;
+    let str = '';
     if(state.stage === 'done') {
         coins += state.wonOnRight;
-        str += `\nGAME HAS ENDED YOUR REWARD IS ${state.wonOnRight}$`;
+        str += `GAME HAS ENDED YOUR REWARD IS ${state.wonOnRight}$\n\n`;
         state = {};
     }
+    str += `Coins: ${coins}, Bet: ${bet}\nNoda:\n\t${dealerHand}\nYou:\n\t${yourHand}`;
     return {str, state, coins};
 }
 
