@@ -1,22 +1,22 @@
-const black_jack = require('engine-blackjack');
-const actions = black_jack.actions;
-const Game = black_jack.Game;
-const prompt = require('prompt-sync')({sigint: true});
+const bj = require('engine-blackjack');
+const actions = bj.actions;
+const Game = bj.Game;
+// const prompt = require('prompt-sync')({sigint: true});
 
 function visualizeCart(cart) {
     let suite = '';
     switch(cart.suite) {
         case 'diamonds':
-            suite = '♦';
+            suite = '\u2662';
             break;
         case 'hearts':
-            suite = '♥';
+            suite = '\u2661';
             break;
         case 'clubs':
-            suite = '♣';
+            suite = '\u2667';
             break;
         case 'spades':
-            suite = '♠';
+            suite = '\u2664';
             break;
     }
     return `${suite}${cart.text}`;
@@ -25,9 +25,9 @@ function visualizeCart(cart) {
 function visualizeHand(hand) {
     hand_text = '';
     for(let cart of hand) {
-        hand_text += visualizeCart(cart) + ' ';
+        hand_text += visualizeCart(cart) + '\t';
     }
-    return hand_text.slice(0, -1);;
+    return hand_text.slice(0, -1);
 }
 
 function getHandScore(hand) {
@@ -38,38 +38,21 @@ function getHandScore(hand) {
     return score;
 }
 
-const game = new Game();
-while(true) {
-    let state = game.getState();
-    // console.log('==========================================================');
-    // console.dir(state);
-    console.log('==========================================================');
-    console.log(`stage: ${state.stage}`);
-    console.log(`Your bet is ${state.finalBet?state.finalBet:state.initialBet}`)
-    let yourHand = state.handInfo.right.cards;
-    let dealerHand = state.dealerCards
-    if(dealerHand) {
-        console.log(`Dealer hand (${getHandScore(dealerHand)}): `)
-        console.log(visualizeHand(dealerHand));
-    }
-    if(yourHand) {
-        console.log(`Your hand (${getHandScore(yourHand)}): `)
-        console.log(visualizeHand(yourHand));
-    }
-    if(state.stage === 'done') {
-        console.log(`GAME HAS ENDED YOUR REWARD IS ${state.wonOnRight}$`);
-        break;
-    }
-
-    const message = prompt('Your turn: ');
-    cmd = message.split(' ');
-    switch(cmd[0]) {
+function action(cmd, num, state, coins) {
+    const game = new Game();
+    if(cmd == 'reset') {
+        state = {};
+    } else if(state)
+        game.setState(state);
+    switch(cmd) {
         // раздать карты
         case 'deal':
-            if(cmd.length === 2 && parseInt(cmd[1]) > 0)
-                game.dispatch(actions.deal({ bet: parseInt(cmd[1]), sideBets: { luckyLucky: 0 } }))
-            else
+            if(num > 0 && coins >= num) {
+                game.dispatch(actions.deal({ bet: num, sideBets: { luckyLucky: 0 } }));
+                coins -= num;
+            } else {
                 console.log('incorrect ammount');
+            }
             break;
         // забрать пол ставки и сдаться
         case 'surrender':
@@ -89,10 +72,23 @@ while(true) {
             break;
         // застраховать руку, если диллеру пришел туз первой картой
         case 'insurance':
-            if(cmd.length === 2 && parseInt(cmd[1]) >= 0)
-                game.dispatch(actions.insurance(parseInt(cmd[1])));
+            if(num >= 0)
+                game.dispatch(actions.insurance(num));
             else
                 console.log('incorrect ammount');
             break;
     }
+    state = game.getState();
+    let bet = state.finalBet?state.finalBet:state.initialBet;
+    let dealerHand = state.dealerCards?visualizeHand(state.dealerCards):'No carts';
+    let yourHand = state.handInfo.right.cards?visualizeHand(state.handInfo.right.cards):'No carts';
+    let str = `Bet: ${bet}\nNoda:\n\t${dealerHand}\nYou:\n\t${yourHand}`;
+    if(state.stage === 'done') {
+        coins += state.wonOnRight;
+        str += `\nGAME HAS ENDED YOUR REWARD IS ${state.wonOnRight}$`;
+        state = {};
+    }
+    return {str, state, coins};
 }
+
+module.exports = action;
