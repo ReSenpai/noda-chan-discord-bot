@@ -44,6 +44,7 @@ while(true) {
     // console.log('==========================================================');
     // console.dir(state);
     console.log('==========================================================');
+    console.log(`stage: ${state.stage}`);
     console.log(`Your bet is ${state.finalBet?state.finalBet:state.initialBet}`)
     let yourHand = state.handInfo.right.cards;
     let dealerHand = state.dealerCards
@@ -60,31 +61,38 @@ while(true) {
         break;
     }
 
-    const cmd = prompt('Your turn: ');
-    switch(cmd) {
+    const message = prompt('Your turn: ');
+    cmd = message.split(' ');
+    switch(cmd[0]) {
         // раздать карты
         case 'deal':
-            game.dispatch(actions.deal(10))
+            if(cmd.length === 2 && parseInt(cmd[1]) > 0)
+                game.dispatch(actions.deal({ bet: parseInt(cmd[1]), sideBets: { luckyLucky: 0 } }))
+            else
+                console.log('incorrect ammount');
             break;
         // забрать пол ставки и сдаться
         case 'surrender':
-            game.dispatch(actions.surrender())
+            game.dispatch(actions.surrender());
             break;
         // взять карту
         case 'hit':
-            game.dispatch(actions.hit('right'))
+            game.dispatch(actions.hit('right'));
             break;
         // больше карт не нужно
         case 'stand':
-            game.dispatch(actions.stand('right'))
+            game.dispatch(actions.stand('right'));
             break;
         // удвоить ставку после разлачи
         case 'double':
-            game.dispatch(actions.double('right'))
+            game.dispatch(actions.double('right'));
             break;
         // застраховать руку, если диллеру пришел туз первой картой
         case 'insurance':
-            game.dispatch(actions.insurance(10))
+            if(cmd.length === 2 && parseInt(cmd[1]) >= 0)
+                game.dispatch(actions.insurance(parseInt(cmd[1])));
+            else
+                console.log('incorrect ammount');
             break;
     }
 }
