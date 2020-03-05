@@ -4,17 +4,18 @@ const Game = black_jack.Game;
 const prompt = require('prompt-sync')({sigint: true});
 
 const game = new Game();
-// console.dir(state);
 while(true) {
     let state = game.getState();
+    // console.log('==========================================================');
+    // console.dir(state);
     console.log('==========================================================');
     console.log(`stage: ${state.stage}, won: ${state.wonOnRight}, final win: ${state.finalWin}, initial bet: ${state.initialBet}, final bet: ${state.finalBet}`)
     console.log('Your hand: ')
     console.log(state.handInfo.right.cards);
     console.log('Dealer hand: ')
     console.log(state.dealerCards);
-    console.log('Dealer hole card: ');
-    console.log(state.dealerHoleCard);
+    // console.log('Dealer hole card: ');
+    // console.log(state.dealerHoleCard);
     if(state.stage === 'done') {
         console.log(`GAME HAS ENDED YOUR REWARD IS ${state.wonOnRight}`);
         break;
@@ -37,6 +38,14 @@ while(true) {
         // больше карт не нужно
         case 'stand':
             game.dispatch(actions.stand('right'))
+            break;
+        // удвоить ставку после разлачи
+        case 'double':
+            game.dispatch(actions.double('right'))
+            break;
+        // застраховать руку, если диллеру пришел туз первой картой
+        case 'insurance':
+            game.dispatch(actions.insurance(10))
             break;
     }
 }
