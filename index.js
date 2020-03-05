@@ -14,6 +14,7 @@ const queries = require('./queries');
 const utils = require('./utils')
 const commands = require('./commands');
 const quest =  require('./quest');
+const blackjack = require('./blackjack.js');
 
 // bot vars
 const bot = new discord.Client();
@@ -89,6 +90,9 @@ bot.on('message', async message => {
                 await quest.handle(message, user, query);
             }
             console.timeEnd('Noda / MSG / HM / Handle message time');
+
+            // blackjack
+            blackjack.game(message,bot);
 
             // update user info in DB
             console.log(`Noda / MSG / HM / Update user data in DB`);
