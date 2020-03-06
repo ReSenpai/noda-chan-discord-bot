@@ -38,7 +38,7 @@ function visualizeHand(hand) {
 
 function action(cmd, num, state, coins) {
     const game = new Game(null, getRules({insurance: false, split: false}));
-    console.dir(game.state);
+    // console.dir(game.state);
     if (cmd == 'reset') {
         state = {};
     } else if(state) 
