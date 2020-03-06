@@ -2,19 +2,20 @@ console.log('Noda / Start...');
 
 // discord bot library
 const discord = require('discord.js');
-// program config
-const config = require('./config');
 // mysql DB library
 const mysql = require('mysql');
 // library for making queries asinc-await
 const util = require('util');
+// program config
+const config = require('./config');
 // mysql queries
 const queries = require('./queries');
 // language processing library
 const utils = require('./utils')
 const commands = require('./commands');
 const quest =  require('./quest');
-const blackjack = require('./blackjack.js');
+const bj = require('./blackjack');
+const regex = require('./regex');
 
 // bot vars
 const bot = new discord.Client();
@@ -90,9 +91,6 @@ bot.on('message', async message => {
                 await quest.handle(message, user, query);
             }
             console.timeEnd('Noda / MSG / HM / Handle message time');
-
-            // blackjack
-            blackjack.game(message,bot);
 
             // update user info in DB
             console.log(`Noda / MSG / HM / Update user data in DB`);

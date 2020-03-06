@@ -31,5 +31,23 @@ const sql_find_question =
     JOIN answers USING (answer_id) 
     ORDER BY score 
     DESC LIMIT 100`;
+
+const sql_get_bj_state = 
+`SELECT state 
+    FROM blackjack 
+    WHERE user_id = ?`;
+
+const sql_upd_bj_state = 
+`INSERT INTO blackjack (user_id, state)
+    VALUES (?, ?)
+    ON DUPLICATE KEY UPDATE state = ?`;
     
-module.exports = {sql_add_user, sql_get_user_info, sql_upd_user_info, sql_add_question, sql_add_answer, sql_connect_question, sql_find_question};
+module.exports = {  sql_add_user, 
+                    sql_get_user_info, 
+                    sql_upd_user_info, 
+                    sql_add_question, 
+                    sql_add_answer, 
+                    sql_connect_question, 
+                    sql_find_question, 
+                    sql_get_bj_state, 
+                    sql_upd_bj_state };

@@ -1,5 +1,7 @@
 const regex = require('./regex')
 const { Attachment, RichEmbed, Emoji, Guild, Client } = require('discord.js');
+const bj = require('./blackjack');
+const queries = require('./queries');
 
 async function executeCommand(message, user, query) {
     // Buy questions guide
@@ -163,20 +165,32 @@ async function executeCommand(message, user, query) {
         Чеканных монет: ${user.coins} 
         `);
         message.channel.send(pushCoins);
-    } else if (regex.help.test(message.content)) {
-        let help_desk = new RichEmbed()
-        .setTitle(`Список команд бота`)
-        .setColor(0x36D904)
-        .setDescription(`
-        Нода - можно получить рандомный ответ на обращение к боту 
-        !профиль - посмотреть свой профиль у ноды
-        !кубик - кинуть кости от 1 до 10
-        !монетки - получить 100 монеток(временная функция для тестеров)
-        !купить вопрос - зайти в шоп, для покупки вопросов
-        !общий вопрос - гайд по покупке обших вопросов
-        !личный вопрос - гайд по покупке личных вопросов
-        `);
-        message.channel.send(help_desk);
+    } else if (/^!bj/i.test(message.content)) {
+        console.log('Noda / MSG / BJ');
+        try {
+            const bj_data = await query(queries.sql_get_bj_state, [user.uid]);
+            let state = {};
+            try {
+                state = JSON.parse(bj_data[0]['state']);
+            } catch (error) {
+                state = {};
+            }
+            let words = message.content.split(' ');
+            let cmd = words[1];
+            let num = words.length==3?parseInt(words[2]):-1;
+            let turn = bj(cmd, num, state, user.coins);
+            user.coins = turn.coins;
+            let stateJSON = JSON.stringify(turn.state);
+            query(queries.sql_upd_bj_state, [user.uid, stateJSON, stateJSON]);
+            const bj_message = new RichEmbed()
+            .setTitle(`Black Jack with Noda`)
+            .setColor(0xebe134)
+            .setDescription(turn.str);
+            message.channel.send(bj_message);
+        } catch (error) {
+            console.log('Noda / MSG / BJ / Error');
+            console.log(error);
+        }
     } else {
         message.channel.send('Не надо мной командовать, окей?!');
     }
