@@ -92,7 +92,7 @@ function action(cmd, num, state, coins) {
     let bet = state.finalBet?state.finalBet:state.initialBet;
     let dealerHand = state.dealerCards?visualizeHand(state.dealerCards):`${true ? 'Нет карт' : 'No cards'}`;
     const check = (state.stage === 'player-turn-right' || state.stage === 'done');
-    var dealer_value_hi = check ? state.dealerValue.hi : 0;
+    let dealer_value_hi = check ? state.dealerValue.hi : 0;
     let dealer_value_lo = check ? state.dealerValue.lo : 0;
     let your_value_hi = check ? state.handInfo.right.playerValue.hi : 0;
     let your_value_lo = check ? state.handInfo.right.playerValue.lo : 0;

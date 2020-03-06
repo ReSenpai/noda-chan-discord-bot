@@ -186,7 +186,8 @@ async function executeCommand(message, user, query) {
             const bj_message = new RichEmbed()
             .setTitle(true ? `Партия игрока ${user.server_name === null ? user.user_name : user.server_name} :diamonds: :clubs: :hearts: :clubs:` : 'Black Jack with Noda')
             .setColor(turn.color)
-            .setDescription(turn.str);
+            .setDescription(turn.str)
+            .setFooter('!бж ставка 25 | !бж еще | !бж хватит | !бж удвоить | !бж пасс');
             message.channel.send(bj_message);
         } catch (error) {
             console.log('Noda / MSG / BJ / Error');
@@ -204,6 +205,7 @@ async function executeCommand(message, user, query) {
         !купить вопрос - зайти в шоп, для покупки вопросов
         !общий вопрос - гайд по покупке обших вопросов
         !личный вопрос - гайд по покупке личных вопросов
+        !бж - играть в блэкджек с нодой
         `);
         message.channel.send(help_desk);
     } else {
