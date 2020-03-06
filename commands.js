@@ -163,6 +163,20 @@ async function executeCommand(message, user, query) {
         Чеканных монет: ${user.coins} 
         `);
         message.channel.send(pushCoins);
+    } else if (regex.help.test(message.content)) {
+        let help_desk = new RichEmbed()
+        .setTitle(`Список команд бота`)
+        .setColor(0x36D904)
+        .setDescription(`
+        Нода - можно получить рандомный ответ на обращение к боту 
+        !профиль - посмотреть свой профиль у ноды
+        !кубик - кинуть кости от 1 до 10
+        !монетки - получить 100 монеток(временная функция для тестеров)
+        !купить вопрос - зайти в шоп, для покупки вопросов
+        !общий вопрос - гайд по покупке обших вопросов
+        !личный вопрос - гайд по покупке личных вопросов
+        `);
+        message.channel.send(help_desk);
     } else {
         message.channel.send('Не надо мной командовать, окей?!');
     }

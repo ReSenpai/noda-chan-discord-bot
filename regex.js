@@ -11,6 +11,7 @@ const personal_question = /^личный$/i;
 const common_question = /^общий$/i;
 const noda = /^нода$/i;
 const question = /^нода/i;
+const help = new RegExp(prefix + 'help$|хелп$', 'i');
 
 
-module.exports = {buy_question, buy_common_question, buy_personal_question, just_question, show_profile, personal_question, common_question, question, noda, cube, money};
+module.exports = {buy_question, buy_common_question, buy_personal_question, just_question, show_profile, personal_question, common_question, question, noda, cube, money, help};
