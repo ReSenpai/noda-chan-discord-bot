@@ -98,12 +98,13 @@ function action(cmd, num, state, coins) {
     let smile1 = '<:389519879809531906:677626911295537173>';
     let smile2 = '<:389519853373095937:677623986007310377>';
     if(state.stage === 'done') {
-        coins += state.wonOnRight;
-        if(!state.wonOnRight)
+        your_winning = Math.floor(state.wonOnRight);
+        coins += your_winning;
+        if(!your_winning)
             str += `Поражение, попращайтесь с ${state.finalBet} монетками ${smile1}\n\n`;
         else
-            str += `Победа ${smile2} Ваш выйгрыш: ${state.wonOnRight}\n`;
-        color = state.wonOnRight === 0 ? 0xFF0000 : 0x36D904;
+            str += `Победа ${smile2} Ваш выйгрыш: ${your_winning}\n`;
+        color = your_winning === 0 ? 0xFF0000 : 0x36D904;
         state = {};
     }
     if(langRus) {
