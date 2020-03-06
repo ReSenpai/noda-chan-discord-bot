@@ -165,7 +165,8 @@ async function executeCommand(message, user, query) {
         Чеканных монет: ${user.coins} 
         `);
         message.channel.send(pushCoins);
-    } else if (/^!bj/i.test(message.content)) {
+    // Blackjack
+    } else if (/^!bj|^!бж/i.test(message.content)) {
         console.log('Noda / MSG / BJ');
         try {
             const bj_data = await query(queries.sql_get_bj_state, [user.uid]);
@@ -183,8 +184,8 @@ async function executeCommand(message, user, query) {
             let stateJSON = JSON.stringify(turn.state);
             query(queries.sql_upd_bj_state, [user.uid, stateJSON, stateJSON]);
             const bj_message = new RichEmbed()
-            .setTitle(`Black Jack with Noda`)
-            .setColor(0xebe134)
+            .setTitle(true ? `Партия игрока ${user.server_name === null ? user.user_name : user.server_name} :diamonds: :clubs: :hearts: :clubs:` : 'Black Jack with Noda')
+            .setColor(turn.color)
             .setDescription(turn.str);
             message.channel.send(bj_message);
         } catch (error) {

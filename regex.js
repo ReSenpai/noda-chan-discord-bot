@@ -13,5 +13,16 @@ const noda = /^нода$/i;
 const question = /^нода/i;
 const help = new RegExp(prefix + 'help$|хелп$', 'i');
 
+// blackjack
 
-module.exports = {buy_question, buy_common_question, buy_personal_question, just_question, show_profile, personal_question, common_question, question, noda, cube, money, help};
+const deal = new RegExp('deal$|ставка$', 'i');
+const surrender = new RegExp('surrender$|pass$|пасс$|пас$', 'i');
+const hit = new RegExp('hit$|хит$|взять$|ещ?$|карту$', 'i');
+const stand = new RegExp('stand$|хватит$|стоп$', 'i');
+const double = new RegExp('double$|удвой$|удвоение$|удвоить$', 'i');
+const insurance = new RegExp('insurance$|страховка$|страх$', 'i');
+
+
+
+
+module.exports = {buy_question, buy_common_question, buy_personal_question, just_question, show_profile, personal_question, common_question, question, noda, cube, money, help, deal, surrender, hit, stand, double, insurance};
