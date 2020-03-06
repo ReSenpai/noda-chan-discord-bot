@@ -2,6 +2,7 @@ const bj = require('engine-blackjack');
 const regex = require('./regex.js');
 const actions = bj.actions;
 const Game = bj.Game;
+const getRules = bj.presets.getRules;
 // const prompt = require('prompt-sync')({sigint: true});
 
 function visualizeCart(cart) {
@@ -35,16 +36,9 @@ function visualizeHand(hand) {
     return hand_text.slice(0, -1);
 }
 
-function getHandScore(hand) {
-    let score = 0;
-    for(let cart of hand) {
-        score += cart.value;
-    }
-    return score;
-}
-
 function action(cmd, num, state, coins) {
-    const game = new Game();
+    const game = new Game(null, getRules({insurance: false, split: false}));
+    console.dir(game.state);
     if (cmd == 'reset') {
         state = {};
     } else if(state) 
@@ -76,7 +70,7 @@ function action(cmd, num, state, coins) {
             if (coins >= state.initialBet) {
                 coins -= state.initialBet;
                 game.dispatch(actions.double('right'));
-                game.dispatch(actions.hit('right'));
+                // game.dispatch(actions.hit('right'));
                 console.log('Double')
             } else {
                 console.log('Not enough coins');
