@@ -76,6 +76,8 @@ function action(cmd, num, state, coins) {
             if (coins >= state.initialBet) {
                 coins -= state.initialBet;
                 game.dispatch(actions.double('right'));
+                game.dispatch(actions.hit('right'));
+                console.log('Double')
             } else {
                 console.log('Not enough coins');
             }
@@ -107,6 +109,7 @@ function action(cmd, num, state, coins) {
         state = {};
     }
     str += (true ? `Монетки: ${coins} | Ставка ${bet} \nРука Ноды | Сумма карт: ${dealer_value_hi === dealer_value_lo ? dealer_value_hi : dealer_value_hi + ' или ' + dealer_value_lo + ' (Есть туз)' } \n\t${dealerHand} \nВаша рука | Сумма карт: ${your_value_hi === your_value_lo ? your_value_lo : your_value_hi + ' или ' + your_value_lo + ' (Есть туз)' } \n\t${yourHand}` : `Coins: ${coins}, Bet: ${bet}\nNoda:\n\t${dealerHand}\nYou:\n\t${yourHand}`);
+    console.log(state);
     return {str, state, coins, color};
 }
 
