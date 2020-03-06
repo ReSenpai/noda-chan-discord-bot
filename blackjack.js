@@ -111,9 +111,9 @@ function action(cmd, num, state, coins) {
         let your_sum = your_hi === your_lo ? your_lo : (`от ${your_lo} до ${your_hi} (Есть туз)`);
         str += `Монетки: ${coins} | Ставка ${bet} 
             Рука Ноды | Сумма карт: ${dealer_sum} 
-            \t${dealerHand} 
+            ${dealerHand} 
             Ваша рука | Сумма карт: ${your_sum}
-            \t${yourHand}`;
+            ${yourHand}`;
     } else {
         str += `Coins: ${coins}, Bet: ${bet}\nNoda:\n\t${dealerHand}\nYou:\n\t${yourHand}`;
     }
