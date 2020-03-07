@@ -33,6 +33,7 @@ function visualizeHand(hand) {
 
 function action(cmd, num, state, coins) {
     const game = new Game(null, getRules({insurance: false, split: false}));
+    let result_value = 0;
     // console.dir(game.state);
     if (cmd == 'reset') {
         state = {};
@@ -45,6 +46,7 @@ function action(cmd, num, state, coins) {
                 game.dispatch(actions.deal({ bet: num, sideBets: { luckyLucky: 0 } }));
                 coins -= num;
             } else {
+                result_value = 2;
                 console.log('incorrect ammount - deal');
             }
             break;
@@ -67,6 +69,7 @@ function action(cmd, num, state, coins) {
                 game.dispatch(actions.double('right'));
                 console.log('Double')
             } else {
+                result_value = 3;
                 console.log('Not enough coins');
             }
             break;
@@ -95,7 +98,6 @@ function action(cmd, num, state, coins) {
     let footer = '';
     let command = '';
     let result = '';
-    let result_value = 0;
     let color = 0x202225;
     let smile1 = ':smile: ';
     let smile2 = ':smirk:';

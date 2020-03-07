@@ -168,32 +168,55 @@ async function executeCommand(message, user, query) {
     // Blackjack
     } else if (/^!bj|^!бж/i.test(message.content)) {
         console.log('Noda / MSG / BJ');
-        try {
-            const bj_data = await query(queries.sql_get_bj_state, [user.uid]);
-            let state = {};
+        if (/^!bj$|^!бж$/i.test(message.content)) {
+            const bj_error = new RichEmbed()
+            .setTitle(':x: Не хватает аргументов')
+            .setColor(0xEF5350)
+            .setDescription('Используйте \`!бж ставка 25\`\n\nСумма ставки может быть любой')
+            message.channel.send(bj_error);
+        } else {
             try {
-                state = JSON.parse(bj_data[0]['state']);
+                const bj_data = await query(queries.sql_get_bj_state, [user.uid]);
+                let state = {};
+                try {
+                    state = JSON.parse(bj_data[0]['state']);
+                } catch (error) {
+                    state = {};
+                }
+                let words = message.content.split(' ');
+                let cmd = words[1];
+                let num = words.length==3?parseInt(words[2]):-1;
+                let turn = bj(cmd, num, state, user.coins);
+                user.coins = turn.coins;
+                let stateJSON = JSON.stringify(turn.state);
+                query(queries.sql_upd_bj_state, [user.uid, stateJSON, stateJSON]);
+                let bj_message = new RichEmbed();
+                    if (turn.result_value === 0 || turn.result_value === 1) {
+                        bj_message = new RichEmbed()
+                        .setTitle(true ? `Блэкджек | ${user.server_name === null ? user.user_name : user.server_name}` : 'Black Jack with Noda')
+                        .setColor(turn.color)
+                        .setDescription(`${turn.result_value === 0 ? turn.command : turn.result}`)
+                        .addField(turn.noda_hand, turn.noda_hand_cards, true)
+                        .addField(turn.you_hand, turn.you_hand_cards, turn.result_value === 0 ? true : false)
+                        .setFooter(turn.footer);
+                    } else if (turn.result_value === 2) {
+                        bj_message = new RichEmbed()
+                        .setTitle(':x: Не хватает монет')
+                        .setColor(0xEF5350)
+                        .setDescription(`Ваша ставка привысила размер вашего кошелька\n\nВаш баланс: ${user.coins}`)
+                        .setFooter(turn.footer);
+                    } else if (turn.result_value === 3) {
+                        bj_message = new RichEmbed()
+                        .setTitle(':x: Не хватает монет')
+                        .setColor(0xEF5350)
+                        .setDescription(`У вас в кошельке не хватает монет для удвоения\n\nВаш баланс: ${user.coins}`)
+                        .setFooter(turn.footer);
+                    }
+                message.channel.send(bj_message);
             } catch (error) {
-                state = {};
+                console.log('Noda / MSG / BJ / Error');
+                console.log(error);
             }
-            let words = message.content.split(' ');
-            let cmd = words[1];
-            let num = words.length==3?parseInt(words[2]):-1;
-            let turn = bj(cmd, num, state, user.coins);
-            user.coins = turn.coins;
-            let stateJSON = JSON.stringify(turn.state);
-            query(queries.sql_upd_bj_state, [user.uid, stateJSON, stateJSON]);
-            const bj_message = new RichEmbed()
-            .setTitle(true ? `Блэкджек | ${user.server_name === null ? user.user_name : user.server_name}` : 'Black Jack with Noda')
-            .setColor(turn.color)
-            .setDescription(`${turn.result_value === 0 ? turn.command : turn.result}`)
-            .addField(turn.noda_hand, turn.noda_hand_cards, true)
-            .addField(turn.you_hand, turn.you_hand_cards, turn.result_value === 0 ? true : false)
-            .setFooter(turn.footer);
-            message.channel.send(bj_message);
-        } catch (error) {
-            console.log('Noda / MSG / BJ / Error');
-            console.log(error);
         }
     } else if (regex.help.test(message.content)) {
         let help_desk = new RichEmbed()
