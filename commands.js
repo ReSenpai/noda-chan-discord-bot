@@ -186,8 +186,9 @@ async function executeCommand(message, user, query) {
             const bj_message = new RichEmbed()
             .setTitle(true ? `Блэкджек | ${user.server_name === null ? user.user_name : user.server_name}` : 'Black Jack with Noda')
             .setColor(turn.color)
-            .setDescription(turn.str)
-            // .addField('Inline field title', 'Some value here', true)
+            .setDescription(`${turn.result_value === 0 ? turn.command : turn.result}`)
+            .addField(turn.noda_hand, turn.noda_hand_cards, true)
+            .addField(turn.you_hand, turn.you_hand_cards, true)
             .setFooter(turn.footer);
             message.channel.send(bj_message);
         } catch (error) {

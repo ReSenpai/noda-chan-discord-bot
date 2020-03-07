@@ -88,36 +88,51 @@ function action(cmd, num, state, coins) {
     let dealer_lo = check ? state.dealerValue.lo : 0;
     let your_hi = check ? state.handInfo.right.playerValue.hi : 0;
     let your_lo = check ? state.handInfo.right.playerValue.lo : 0;
-    let str = '';
+    let noda_hand = '';
+    let noda_hand_cards = '';
+    let you_hand = '';
+    let you_hand_cards = '';
     let footer = '';
-    let color = 0x34363C;
-    let smile1 = '<:389519879809531906:677626911295537173>';
-    let smile2 = '<:389519853373095937:677623986007310377>';
+    let command = '';
+    let result = '';
+    let result_value = 0;
+    let color = 0x202225;
+    let smile1 = ':smile: ';
+    let smile2 = ':smirk:';
     if(state.stage === 'done') {
         your_winning = Math.floor(state.wonOnRight);
         coins += your_winning;
-        if(!your_winning)
-            str += `Поражение, попращайтесь с ${state.finalBet} монетками ${smile1}\n\n`;
-        else
-            str += `Победа ${smile2} Ваш выйгрыш: ${your_winning}\n`;
+        if(!your_winning) {
+            result = `Поражение, попращайтесь с ${state.finalBet} монетками ${smile1}\n`
+            result_value = 1;
+        } else {
+            result = `Победа ${smile2} Ваш выйгрыш: ${your_winning}\n`;
+            result_value = 1;
+        }
         color = your_winning === 0 ? 0xEF5350 : 0x009900;
         state = {};
     }
     if(langRus) {
         let dealer_sum = dealer_hi === dealer_lo ? dealer_hi : (`от ${dealer_lo} до ${dealer_hi} (Есть туз)`);
         let your_sum = your_hi === your_lo ? your_lo : (`от ${your_lo} до ${your_hi} (Есть туз)`);
-        str += `
-            Набери \`!бж еще\` что бы взять карту, \`!бж хватит\` - передать ход ноде,
-            \`!бж пасс\` забрать половину ставки и выйти, \`!бж удвоить\` для удвоения
-            \n\nРука ноды | Сумма карт: ${dealer_sum} 
-            ${dealerHand} 
-            \nВаша рука | Сумма карт: ${your_sum}
-            ${yourHand}`;
-        footer += `Ставка: ${bet}  |  Ваши монетки: ${coins}`
+        command += `
+            \`!бж еще\` взять карту, \`!бж хватит\` - закончить ход,
+            \`!бж пасс\` выйти, \`!бж удвоить\` для удвоения`;
+        noda_hand += `
+            \n\nРука ноды`;
+        noda_hand_cards += `
+            ${dealerHand}
+            Счёт: ${dealer_sum}`
+        you_hand += `
+            \nВаша рука`
+        you_hand_cards += `
+            ${yourHand}
+            Счёт: ${your_sum}`
+        footer += `Ставка: ${bet}  |  Ваши монетки: ${coins}`;
     } else {
         str += `Coins: ${coins}, Bet: ${bet}\nNoda:\n\t${dealerHand}\nYou:\n\t${yourHand}`;
     }
-    return {str, state, coins, color, footer};
+    return {state, coins, color, footer, command, noda_hand, noda_hand_cards, you_hand, you_hand_cards, result, result_value};
 }
 
 module.exports = action;
