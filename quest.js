@@ -1,13 +1,14 @@
 const regex = require('./regex')
 const utils = require('./utils')
 const queries = require('./queries');
+const consts = require('./consts');
 const { Attachment, RichEmbed, Emoji, Guild, Client } = require('discord.js');
 
 async function handleQuestion(message, user, query) {
     // "Нода ..."
     if(regex.noda.test(message.content)){
         console.log(`Noda / MSG / HM / Bot's name`);
-        message.channel.send(utils.rndAnswer(utils.nodaAnsw));
+        message.channel.send(utils.rndAnswer(consts.nodaAnsw));
     } else if (regex.question.test(message.content)) {
         console.log(`Noda / MSG / HM / QN / Question to Noda`);
         console.log(`Noda / MSG / HM / QN / Find the question in DB`);
@@ -51,7 +52,7 @@ async function handleQuestion(message, user, query) {
                 console.log(`Noda / MSG / HM / QN / No matches with questions in DB`);
                 console.log(`Noda / MSG / HM / QN / Choose a random answer`);
                 // no similar questions in DB
-                ans = utils.rndAnswer(utils.confusedAnsw);
+                ans = utils.rndAnswer(consts.confusedAnsw);
             }
             console.log(`Noda / MSG / HM / QN / Сhosen answer: '${ans}'`);
             // answer

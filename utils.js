@@ -13,21 +13,6 @@ function stemming(str) {
     console.log(`Noda / Stemmed / ${str_stemmed}`);
     return str_stemmed;
 }
-
-let nodaAnsw = [    'Шито?', 
-                    'Отстань, я занята...', 
-                    'Ну шо такое?', 'Хватит меня звать ._.', 
-                    'Ваще то моё полное имя - Нода тян',
-                    'Ась?',
-                    'Шо надо то?',
-                    'Слушаю:3',
-                    'Как банный лист пристал...'];
-
-let confusedAnsw = ['Cложно, сложно, ни**я не понятно.',
-                    'Чееего *лять?',
-                    'Ни**я не поняла, но очень интересно:3',
-                    'Чот я ничего не поняла',
-                    'А можно помедленее? Я записываю...'];
                     
 function rndAnswer(answers) {
     return answers[Math.ceil(Math.random() * answers.length)];
@@ -64,4 +49,4 @@ function getDiscordInfo(message, user, query) {
     user.avatar = message.author.avatarURL;
 }
 
-module.exports = {stemming, nodaAnsw, confusedAnsw, rndAnswer, updUserInfo, getDiscordInfo};
+module.exports = {stemming, rndAnswer, updUserInfo, getDiscordInfo};
