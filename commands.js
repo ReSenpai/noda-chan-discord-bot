@@ -211,6 +211,11 @@ async function executeCommand(message, user, query) {
                         .setColor(0xEF5350)
                         .setDescription(`У вас в кошельке не хватает монет для удвоения\n\nВаш баланс: ${user.coins}`)
                         .setFooter(turn.footer);
+                    } else if (turn.result_value === 4) {
+                        bj_message = new RichEmbed()
+                        .setTitle(':x: Не хватает аргументов')
+                        .setColor(0xEF5350)
+                        .setDescription(`Вы не указали сумму ставки\n\nИспользуйте \`!бж ставка 25\`\n\nСумма ставки может быть любой`)
                     }
                 message.channel.send(bj_message);
             } catch (error) {

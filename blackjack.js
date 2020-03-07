@@ -45,6 +45,8 @@ function action(cmd, num, state, coins) {
             if (num > 0 && coins >= num) {
                 game.dispatch(actions.deal({ bet: num, sideBets: { luckyLucky: 0 } }));
                 coins -= num;
+            } else if (num <= 0) {
+                result_value = 4;
             } else {
                 result_value = 2;
                 console.log('incorrect ammount - deal');
@@ -82,6 +84,7 @@ function action(cmd, num, state, coins) {
             break;
     }
     state = game.getState();
+    console.log(state);
     let langRus = true;
     let bet = state.finalBet?state.finalBet:state.initialBet;
     let dealerHand = state.dealerCards?visualizeHand(state.dealerCards):`${langRus ? 'Нет карт' : 'No cards'}`;
