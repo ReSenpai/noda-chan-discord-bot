@@ -9,19 +9,15 @@ function visualizeCart(cart) {
     switch(cart.suite) {
         case 'diamonds':
             suite = '\u2666';
-            //suite = '\u2662';
             break;
         case 'hearts':
             suite = '\u2665';
-            //suite = '\u2661';
             break;
         case 'clubs':
             suite = '\u2663';
-            //suite = '\u2667';
             break;
         case 'spades':
             suite = '\u2660';
-            //suite = '\u2664';
             break;
     }
     return `${suite}${cart.text}`;
@@ -93,6 +89,7 @@ function action(cmd, num, state, coins) {
     let your_hi = check ? state.handInfo.right.playerValue.hi : 0;
     let your_lo = check ? state.handInfo.right.playerValue.lo : 0;
     let str = '';
+    let footer = '';
     let color = 0x34363C;
     let smile1 = '<:389519879809531906:677626911295537173>';
     let smile2 = '<:389519853373095937:677623986007310377>';
@@ -103,21 +100,24 @@ function action(cmd, num, state, coins) {
             str += `Поражение, попращайтесь с ${state.finalBet} монетками ${smile1}\n\n`;
         else
             str += `Победа ${smile2} Ваш выйгрыш: ${your_winning}\n`;
-        color = your_winning === 0 ? 0xFF0000 : 0x36D904;
+        color = your_winning === 0 ? 0xEF5350 : 0x009900;
         state = {};
     }
     if(langRus) {
         let dealer_sum = dealer_hi === dealer_lo ? dealer_hi : (`от ${dealer_lo} до ${dealer_hi} (Есть туз)`);
         let your_sum = your_hi === your_lo ? your_lo : (`от ${your_lo} до ${your_hi} (Есть туз)`);
-        str += `Монетки: ${coins} | Ставка ${bet} 
-            Рука Ноды | Сумма карт: ${dealer_sum} 
+        str += `
+            Набери \`!бж еще\` что бы взять карту, \`!бж хватит\` - передать ход ноде,
+            \`!бж пасс\` забрать половину ставки и выйти, \`!бж удвоить\` для удвоения
+            \n\nРука ноды | Сумма карт: ${dealer_sum} 
             ${dealerHand} 
-            Ваша рука | Сумма карт: ${your_sum}
+            \nВаша рука | Сумма карт: ${your_sum}
             ${yourHand}`;
+        footer += `Ставка: ${bet}  |  Ваши монетки: ${coins}`
     } else {
         str += `Coins: ${coins}, Bet: ${bet}\nNoda:\n\t${dealerHand}\nYou:\n\t${yourHand}`;
     }
-    return {str, state, coins, color};
+    return {str, state, coins, color, footer};
 }
 
 module.exports = action;

@@ -184,10 +184,11 @@ async function executeCommand(message, user, query) {
             let stateJSON = JSON.stringify(turn.state);
             query(queries.sql_upd_bj_state, [user.uid, stateJSON, stateJSON]);
             const bj_message = new RichEmbed()
-            .setTitle(true ? `Партия игрока ${user.server_name === null ? user.user_name : user.server_name} :diamonds: :clubs: :hearts: :clubs:` : 'Black Jack with Noda')
+            .setTitle(true ? `Блэкджек | ${user.server_name === null ? user.user_name : user.server_name}` : 'Black Jack with Noda')
             .setColor(turn.color)
             .setDescription(turn.str)
-            .setFooter('!бж ставка 25 | !бж еще | !бж хватит | !бж пасс');
+            // .addField('Inline field title', 'Some value here', true)
+            .setFooter(turn.footer);
             message.channel.send(bj_message);
         } catch (error) {
             console.log('Noda / MSG / BJ / Error');
