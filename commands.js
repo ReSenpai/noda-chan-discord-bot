@@ -172,7 +172,8 @@ async function executeCommand(message, user, query) {
             const bj_error = new RichEmbed()
             .setTitle(':x: Не хватает аргументов')
             .setColor(0xEF5350)
-            .setDescription('Используйте \`!бж ставка 25\`\n\nСумма ставки может быть любой')
+            .setDescription(`Используйте \`!бж ставка 25\`\n\nСумма ставки может быть любой\n
+                            \`!бж хелп\` - что бы посмотреть правила игры.`)
             message.channel.send(bj_error);
         } else {
             try {
@@ -218,10 +219,12 @@ async function executeCommand(message, user, query) {
                         .setDescription(`Вы не указали сумму ставки\n\nИспользуйте \`!бж ставка 25\`\n\nСумма ставки может быть любой`)
                     } else if (turn.result_value === 5) {
                         bj_message = new RichEmbed()
-                        .setTitle('Правила игры')
+                        .setTitle('Правила игры: Блэкджек')
                         .setColor(0x202225)
                         .setDescription(`Цель игры - набрать 21 очко или набрать больше очков,
                                         чем Нода, но не больше 21.\n
+                                        Начать игру вы можете, написав \`!бж ставка 25\`,
+                                        сумма ставки может быть любой.\n
                                         В начале игры вам в руку приходят 2 карты, а в руку Ноды
                                         одна. Именно на этом ходу вы можете удвоить свою ставку,
                                         написав \`!бж удвоить\`. Это действие сразу передает ход
