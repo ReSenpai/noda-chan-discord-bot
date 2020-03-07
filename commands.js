@@ -188,7 +188,7 @@ async function executeCommand(message, user, query) {
             .setColor(turn.color)
             .setDescription(`${turn.result_value === 0 ? turn.command : turn.result}`)
             .addField(turn.noda_hand, turn.noda_hand_cards, true)
-            .addField(turn.you_hand, turn.you_hand_cards, true)
+            .addField(turn.you_hand, turn.you_hand_cards, turn.result_value === 0 ? true : false)
             .setFooter(turn.footer);
             message.channel.send(bj_message);
         } catch (error) {
