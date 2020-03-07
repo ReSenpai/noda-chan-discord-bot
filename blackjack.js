@@ -76,7 +76,6 @@ function action(cmd, num, state, coins) {
             if (coins >= state.initialBet) {
                 coins -= state.initialBet;
                 game.dispatch(actions.double('right'));
-                game.dispatch(actions.hit('right'));
                 console.log('Double')
             } else {
                 console.log('Not enough coins');

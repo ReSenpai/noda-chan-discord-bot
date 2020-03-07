@@ -22,7 +22,7 @@ async function executeCommand(message, user, query) {
     // Buy common_questions guide
     } else if (regex.buy_common_question.test(message.content)) {
         console.log(`Noda / MSG / HM / Buy common question info`);
-        if(coins >= 25){
+        if(user.coins >= 25){
             const commonQuestion = new RichEmbed()
             .setTitle(`Покупка общего вопроса.`)
             .setColor(0xebe134)
@@ -44,7 +44,7 @@ async function executeCommand(message, user, query) {
     // Buy personal_question guide 
     } else if (regex.buy_personal_question.test(message.content)) {
         console.log(`Noda / MSG / HM / Buy personal question info`);
-        if(coins >= 100){
+        if(user.coins >= 100){
             let plate = new RichEmbed()
             .setTitle(`Покупка личного вопроса.`)
             .setColor(0xebe134)
@@ -187,7 +187,7 @@ async function executeCommand(message, user, query) {
             .setTitle(true ? `Партия игрока ${user.server_name === null ? user.user_name : user.server_name} :diamonds: :clubs: :hearts: :clubs:` : 'Black Jack with Noda')
             .setColor(turn.color)
             .setDescription(turn.str)
-            .setFooter('!бж ставка 25 | !бж еще | !бж хватит | !бж удвоить | !бж пасс');
+            .setFooter('!бж ставка 25 | !бж еще | !бж хватит | !бж пасс');
             message.channel.send(bj_message);
         } catch (error) {
             console.log('Noda / MSG / BJ / Error');
