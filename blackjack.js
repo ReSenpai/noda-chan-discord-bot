@@ -82,6 +82,9 @@ function action(cmd, num, state, coins) {
             else
                 console.log('incorrect ammount');
             break;
+        case regex.bj_help.test(cmd):
+            result_value = 5;
+            break;
     }
     state = game.getState();
     console.log(state);
