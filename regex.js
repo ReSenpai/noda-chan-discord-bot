@@ -16,7 +16,7 @@ const help = new RegExp(prefix + 'help$|хелп$', 'i');
 // blackjack
 
 const deal = new RegExp('deal$|ставка$', 'i');
-const surrender = new RegExp('surrender$|pass$|пасс$|пас$', 'i');
+const surrender = new RegExp('surrender$|pass$|пасc$|пас$', 'i');
 const hit = new RegExp('hit$|хит$|взять$|ещ?$|карту$', 'i');
 const stand = new RegExp('stand$|хватит$|стоп$', 'i');
 const double = new RegExp('double$|удвой$|удвоение$|удвоить$', 'i');
