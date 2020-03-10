@@ -1,4 +1,5 @@
-const token = 'NjgxOTQxNTk1NjcwNTc3MTg4.XlVx6A.R9uu8loTr-EcUAQV4PdJN3wfsBk';
+const token = 'NjgxOTQxNTk1NjcwNTc3MTg4.Xmb-UA.zLUfCjJETCUFPWO3HwsbTpBw-6s';
+
 const DB = {    host: 'localhost',
                     user: 'root',
                     password: '', 
