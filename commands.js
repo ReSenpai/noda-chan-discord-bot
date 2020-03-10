@@ -235,19 +235,6 @@ async function executeCommand(message, user, query) {
                                         вы можете передать ход ноде, написав \`!бж хватит\`.\n
                                         Вы так же можете в любой момент игры, до её конца,
                                         забрать половину вашей ставки - \`!бж пасс\`. `)
-                    } else if (turn.result_value === 'surrender') {
-                        bj_message = new RichEmbed()
-                        .setTitle(':x: Нарушение правил игры')
-                        .setColor(0xEF5350)
-                        .setDescription(`Вы можете забрать половину ставки только
-                        на первичной раздаче.
-                        \nСейчас доступно \`!бж еще\` и \`!бж хватит\``)
-                    } else if (turn.result_value === 'double') {
-                        bj_message = new RichEmbed()
-                        .setTitle(':x: Нарушение правил игры')
-                        .setColor(0xEF5350)
-                        .setDescription(`Вы можете удвоить ставку только на первичной раздаче.
-                        \nСейчас доступно \`!бж еще\` и \`!бж хватит\``)
                     }
                 message.channel.send(bj_message);
             } catch (error) {

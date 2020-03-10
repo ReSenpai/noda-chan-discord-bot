@@ -15,10 +15,4 @@ const confusedAnsw = [  'Cложно, сложно, ни**я не понятно
                         'Чот я ничего не поняла',
                         'А можно помедленее? Я записываю...' ];
 
-const bjMessage = {
-    title: [':x: Не хватает монет',],
-    color: [0xEF5350,],
-    description: [`Ваша ставка привысила размер вашего кошелька\n\nВаш баланс: ${user.coins}`,]
-}
-
 module.exports = { log_lvl, nodaAnsw, confusedAnsw };

@@ -1,7 +1,5 @@
 const bj = require('engine-blackjack');
 const regex = require('./regex.js');
-const consts = require('./consts.js');
-const RichEmbed = require('discord.js');
 const actions = bj.actions;
 const Game = bj.Game;
 const getRules = bj.presets.getRules;
@@ -33,18 +31,6 @@ function visualizeHand(hand) {
     return hand_text.slice(0, -1);
 }
 
-function richEmbedConstructor(...templates) {
-    let bj_message = new RichEmbed()
-    templates === 'title' ? bj_message.setTitle() : '' 
-    .setColor()
-    templates === 'description' ? bj_message.setDescription() : ''
-    templates === 'field' ? bj_message.addField() : ''
-    templates === 'field_2' ? bj_message.addField() : ''
-    templates === 'field_2' ? bj_message.addField() : ''
-    templates === 'footer' ? bj_message.setFooter() : ''
-
-}
-
 function action(cmd, num, state, coins) {
     const game = new Game(null, getRules({insurance: false, split: false}));
     let result_value = 0;
@@ -69,7 +55,6 @@ function action(cmd, num, state, coins) {
         // забрать пол ставки и сдаться
         case regex.surrender.test(cmd):
             game.dispatch(actions.surrender());
-            state.handInfo.right.availableActions.surrender ? result_value = 0 : result_value = 'surrender';
             break;
         // взять карту
         case regex.hit.test(cmd):
@@ -84,7 +69,6 @@ function action(cmd, num, state, coins) {
             if (coins >= state.initialBet) {
                 coins -= state.initialBet;
                 game.dispatch(actions.double('right'));
-                state.handInfo.right.availableActions.double ? result_value = 0 : result_value = 'double';
                 console.log('Double')
             } else {
                 result_value = 3;
@@ -103,7 +87,7 @@ function action(cmd, num, state, coins) {
             break;
     }
     state = game.getState();
-    console.log(state.handInfo.right.availableActions);
+    console.log(state);
     let langRus = true;
     let bet = state.finalBet?state.finalBet:state.initialBet;
     let dealerHand = state.dealerCards?visualizeHand(state.dealerCards):`${langRus ? 'Нет карт' : 'No cards'}`;
@@ -139,20 +123,20 @@ function action(cmd, num, state, coins) {
     if(langRus) {
         let dealer_sum = dealer_hi === dealer_lo ? dealer_hi : (`от ${dealer_lo} до ${dealer_hi} (Есть туз)`);
         let your_sum = your_hi === your_lo ? your_lo : (`от ${your_lo} до ${your_hi} (Есть туз)`);
-        command = `
+        command += `
             \`!бж еще\` взять карту, \`!бж хватит\` - закончить ход,
             \`!бж пасс\` выйти, \`!бж удвоить\` для удвоения`;
-        noda_hand = `
+        noda_hand += `
             \n\nРука ноды`;
-        noda_hand_cards = `
+        noda_hand_cards += `
             ${dealerHand}
             Счёт: ${dealer_sum}`
-        you_hand = `
+        you_hand += `
             \nВаша рука`
-        you_hand_cards = `
+        you_hand_cards += `
             ${yourHand}
             Счёт: ${your_sum}`
-        footer = `Ставка: ${bet}  |  Ваши монетки: ${coins}`;
+        footer += `Ставка: ${bet}  |  Ваши монетки: ${coins}`;
     } else {
         str += `Coins: ${coins}, Bet: ${bet}\nNoda:\n\t${dealerHand}\nYou:\n\t${yourHand}`;
     }
