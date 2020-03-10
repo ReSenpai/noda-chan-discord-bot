@@ -1,7 +1,7 @@
 // discord bot library
 const discord = require('discord.js');
 // mysql DB library
-const mysql = require('mariadb');
+const mysql = require('mysql');
 // library for making queries asinc-await
 const util = require('util');
 // program config
