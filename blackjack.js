@@ -87,7 +87,6 @@ function action(cmd, num, state, coins) {
             break;
     }
     state = game.getState();
-    console.log(state);
     let langRus = true;
     let bet = state.finalBet?state.finalBet:state.initialBet;
     let dealerHand = state.dealerCards?visualizeHand(state.dealerCards):`${langRus ? 'Нет карт' : 'No cards'}`;
