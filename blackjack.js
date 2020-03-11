@@ -56,6 +56,9 @@ function action(cmd, num, state, coins) {
     switch(true) {
         // раздать карты
         case regex.deal.test(cmd):
+            console.log(cmd);
+            num = parseInt(cmd) > 0 ? parseInt(cmd) : -1;
+            console.log(num);
             if (num > 0 && coins >= num) {
                 game.dispatch(actions.deal({ bet: num, sideBets: { luckyLucky: 0 } }));
                 coins -= num;

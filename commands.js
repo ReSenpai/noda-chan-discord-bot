@@ -64,6 +64,15 @@ async function executeCommand(message, user, query) {
             message.channel.send(plate_false);
         }  
     // buy questions with code
+    } else if (regex.calculate.test(message.content)) {
+        let args = message.content.split(' ');
+        args.splice(0, 1);
+        console.log(args);
+        let result = args.join('');
+        
+        console.log(result);
+        message.channel.send(eval(result));
+
     } else if (regex.just_question.test(message.content)) {
         console.log(`Noda / MSG / HM / BQ / Buy a question!`);
         let args = message.content.split(" [");
