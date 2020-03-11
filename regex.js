@@ -11,8 +11,9 @@ const personal_question = /^личный$/i;
 const common_question = /^общий$/i;
 const noda = /^нода$/i;
 const question = /^нода/i;
-const calculate = new RegExp(prefix + 'посчитай$|считай$' || 'нода посчитай$|нода считай$', 'i');
+const calculate = new RegExp(prefix + 'посчитай|считай|calc', 'i');
 const help = new RegExp(prefix + 'help$|хелп$', 'i');
+const blacklist_calc = /[^a-z]/gi;
 
 // blackjack
 
@@ -27,4 +28,4 @@ const bj_help = new RegExp('help$|хелп$', 'i');
 
 
 
-module.exports = {buy_question, buy_common_question, buy_personal_question, just_question, show_profile, personal_question, common_question, question, noda, cube, money, help, deal, surrender, hit, stand, double, insurance, bj_help, calculate};
+module.exports = {buy_question, buy_common_question, buy_personal_question, just_question, show_profile, personal_question, common_question, question, noda, cube, money, help, deal, surrender, hit, stand, double, insurance, bj_help, calculate, blacklist_calc};

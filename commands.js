@@ -63,16 +63,29 @@ async function executeCommand(message, user, query) {
             `);
             message.channel.send(plate_false);
         }  
-    // buy questions with code
+    // calculate
     } else if (regex.calculate.test(message.content)) {
         let args = message.content.split(' ');
         args.splice(0, 1);
-        console.log(args);
-        let result = args.join('');
-        
-        console.log(result);
-        message.channel.send(eval(result));
+        let check = true;
+        args.forEach(element => {
+            if (regex.blacklist_calc.test(element)) {
+                console.log(element);
+                console.log(regex.deal.test(element));
 
+            } else {
+                check = false;
+            }
+        });
+        console.log(args);
+        if (check) {
+            let result = args.join('');
+            console.log(result);
+            message.channel.send(eval(result));
+        } else {
+            message.channel.send('Херню написал');
+        }
+    // buy questions with code
     } else if (regex.just_question.test(message.content)) {
         console.log(`Noda / MSG / HM / BQ / Buy a question!`);
         let args = message.content.split(" [");
