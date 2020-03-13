@@ -110,10 +110,10 @@ async function executeCommand(message, user, query) {
         for (let i = 0; i < description.length; i++) {
             let rank_info_clean = '';
             for (var g = 0; g < rank_info_title.length; g++) {
-                rank_info_clean = talent_obj[0][rank_info_title[i]].toString().replace(clean_desc, '');
+                rank_info_clean = talent_obj[0][rank_info_title[g]].toString().replace(clean_desc, '');
             }
-            if (g === rank_info_title.length) {
-                let rank_info_clean = '';
+            if (g == rank_info_title.length) {
+                rank_info_clean = '';
             }
             rank_info += description[i] + rank_info_clean;
         }
