@@ -2,6 +2,7 @@ const regex = require('./regex')
 const { Attachment, RichEmbed, Emoji, Guild, Client } = require('discord.js');
 const bj = require('./blackjack');
 const queries = require('./queries');
+const talent = require('./data.js');
 
 async function executeCommand(message, user, query) {
     // Buy questions guide
@@ -85,6 +86,43 @@ async function executeCommand(message, user, query) {
         } else {
             message.channel.send('Херню написал');
         }
+    // converter
+    } else if (regex.leaves.test(message.content)) {
+        let args = message.content.split(' ');
+        let result = (args[1] * 0.54);
+        if (result >= 100) {
+            console.log(result / 100)
+            message.channel.send(`Будет стоить ${(result / 100).toFixed(2)} брюля`);
+        } else {
+            message.channel.send(`Будет стоить ${result.toFixed(2)} голды`);
+        }
+    // show talent  
+    } else if (regex.talent.test(message.content)) {
+        let args = message.content.split(' ');
+        const talent_regex = new RegExp(args[1] + '.*', 'i');
+        const clean_desc = /(\<(\/?[^>]+)>)/g;
+        const result = talent[0].filter(words => talent_regex.test(words.name))
+        const description = result[0].desc.replace(clean_desc, '').split('#');
+        let commm = '';
+
+        for (let i = 0; i < description.length; i++) {
+            
+            if (i == 0) {
+                commm += description[0] + result[0].rankInfo
+            } else {
+                commm += description[i] + result[0].rankInfo2
+            }
+        }
+        console.log(description);
+        console.log(commm);
+        
+        let talent_message = new RichEmbed()
+        .setTitle(`${result[0].name}`)
+        .setColor(0xEF5350)
+        .setDescription(`Прокачивается на ${result[0].ranks} кликов
+        ${description}`)
+        message.channel.send(talent_message);
+
     // buy questions with code
     } else if (regex.just_question.test(message.content)) {
         console.log(`Noda / MSG / HM / BQ / Buy a question!`);
