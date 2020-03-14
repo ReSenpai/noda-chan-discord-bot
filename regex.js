@@ -29,4 +29,4 @@ const bj_help = new RegExp('help$|хелп$', 'i');
 
 
 
-module.exports = {buy_question, buy_common_question, buy_personal_question, just_question, show_profile, personal_question, common_question, question, noda, cube, money, help, deal, surrender, hit, stand, double, insurance, bj_help, calculate, blacklist_calc, leaves, talent};
+module.exports = {buy_question, buy_common_question, buy_personal_question, just_question, show_profile, personal_question, common_question, question, noda, cube, money, help, deal, surrender, hit, stand, double, insurance, bj_help, calculate, blacklist_calc, leaves};
