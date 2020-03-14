@@ -2,7 +2,6 @@ const regex = require('./regex')
 const { Attachment, RichEmbed, Emoji, Guild, Client } = require('discord.js');
 const bj = require('./blackjack');
 const queries = require('./queries');
-const talent = require('./data.js');
 
 async function executeCommand(message, user, query) {
     // Buy questions guide
@@ -96,37 +95,6 @@ async function executeCommand(message, user, query) {
         } else {
             message.channel.send(`Будет стоить ${result.toFixed(2)} голды`);
         }
-    // show talent  
-    } else if (regex.talent.test(message.content)) {
-        let args = message.content.split(' ');
-        const talent_regex = new RegExp(args[1] + '.*', 'i');
-        const rank_info_regex = /^rankInfo.?/i
-        const clean_desc = /(\<(\/?[^>]+)>)/g;
-        const talent_obj = talent[0].filter(words => talent_regex.test(words.name));
-        const rank_info_title = Object.keys(talent_obj[0]).filter(words => rank_info_regex.test(words));
-        const description = talent_obj[0].desc.replace(clean_desc, '').split('#');
-        let rank_info = '';
-
-        for (let i = 0; i < description.length; i++) {
-            let rank_info_clean = '';
-            for (var g = 0; g < rank_info_title.length; g++) {
-                rank_info_clean = talent_obj[0][rank_info_title[g]].toString().replace(clean_desc, '');
-            }
-            if (g == rank_info_title.length) {
-                rank_info_clean = '';
-            }
-            rank_info += description[i] + rank_info_clean;
-        }
-        console.log(description);
-        // console.log(rank_info);
-        
-        let talent_message = new RichEmbed()
-        .setTitle(`${talent_obj[0].name}`)
-        .setColor(0xEF5350)
-        .setDescription(`Прокачивается на ${talent_obj[0].ranks} кликов
-        ${rank_info}`)
-        message.channel.send(talent_message);
-
     // buy questions with code
     } else if (regex.just_question.test(message.content)) {
         console.log(`Noda / MSG / HM / BQ / Buy a question!`);

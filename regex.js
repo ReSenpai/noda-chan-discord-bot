@@ -15,7 +15,6 @@ const calculate = new RegExp(prefix + 'посчитай|считай|calc', 'i')
 const help = new RegExp(prefix + 'help$|хелп$', 'i');
 const blacklist_calc = /^[^a-z]*$/i;
 const leaves = new RegExp(prefix + 'листья', 'i');
-const talent = new RegExp(prefix + 'талант', 'i');
 
 // blackjack
 
