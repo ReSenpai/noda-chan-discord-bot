@@ -80,7 +80,7 @@ bot.on('message', async message => {
 
             // log user info
             logger.log(3, 'MSG', `User info: \n\tuser_name: '${user.user_name}'\n\tnickname: '${user.server_name}'` + 
-                `\n\tuser_id: '${user.uid}'\n\tcoins: '${user.coins}'\n\tlvl: '${user.lvl}'\n\texp: '${user.exp}'\n\tquestions: '${user.questions}'`);
+                `\n\tuser_id: '${user.uid}'\n\tcoins: '${user.coins}'\n\tlvl: '${user.lvl}'\n\texp: '${user.exp}'\n\tquestions: '${user.questions}'\n\tdaily_time: '${user.daily_time}'`);
             
             // system commands
             logger.log(2, 'MSG', 'Handle message');

@@ -1,4 +1,4 @@
-const log_lvl = 1;
+const log_lvl = 2;
 
 const nodaAnsw = [      'Шито?', 
                         'Отстань, я занята...', 
