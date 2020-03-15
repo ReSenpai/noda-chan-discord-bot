@@ -8,7 +8,7 @@ const sql_get_user_info =
 
 const sql_upd_user_info = 
 `UPDATE users 
-    SET coins = ?, exp = ?, lvl = ?, questions = ?, daily_time = ? 
+    SET coins = ?, exp = ?, lvl = ?, questions = ? 
     WHERE user_id = ?`;
 
 const sql_add_question = 
