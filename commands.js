@@ -70,18 +70,17 @@ async function executeCommand(message, user, query) {
         let check = true;
         args.forEach(element => {
             if (regex.blacklist_calc.test(element)) {
-                console.log(element);
-                console.log(regex.deal.test(element));
-
             } else {
                 check = false;
             }
         });
-        console.log(args);
         if (check) {
-            let result = args.join('');
-            console.log(result);
-            message.channel.send(eval(result));
+            let result = eval(args.join(''));
+            if (result % 1 === 0) {  
+                message.channel.send(result);
+            } else {
+                message.channel.send(result.toFixed(2));
+            }
         } else {
             message.channel.send('Херню написал');
         }
@@ -95,6 +94,26 @@ async function executeCommand(message, user, query) {
         } else {
             message.channel.send(`Будет стоить ${result.toFixed(2)} голды`);
         }
+    // Daily
+    } else if (message.content === '!daily') {
+        const now = new Date();
+        now.setHours(now.getHours() + 3);  //  now time MSK
+        console.log(user.daily_time)
+        user.daily_time = 'kek';
+        console.log(user.daily_time)
+
+        // if (user.daily_time === 'ololo') {
+        //     user.daily_time = 'kek'
+
+            // let daily_message = new RichEmbed()
+            // .setTitle(`Дейлик`)
+            // .setColor(0x36D904)
+            // .setDescription(`
+            // 50 монеток держи
+            // Чеканных монет: ${user.coins} 
+            // `);
+            // message.channel.send(daily_message);
+        // } 
     // buy questions with code
     } else if (regex.just_question.test(message.content)) {
         console.log(`Noda / MSG / HM / BQ / Buy a question!`);
@@ -300,6 +319,8 @@ async function executeCommand(message, user, query) {
         !общий вопрос - гайд по покупке обших вопросов
         !личный вопрос - гайд по покупке личных вопросов
         !бж - играть в блэкджек с нодой
+        !(п)осчитай - калькулятор
+        !листья 1000 - конвертер листьев в голду 
         `);
         message.channel.send(help_desk);
     } else {
