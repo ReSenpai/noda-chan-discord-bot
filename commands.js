@@ -1,5 +1,4 @@
 const regex = require('./regex')
-const consts = require('./consts.js');
 const { Attachment, RichEmbed, Emoji, Guild, Client } = require('discord.js');
 const bj = require('./blackjack');
 const queries = require('./queries');
@@ -343,7 +342,8 @@ async function executeCommand(message, user, query) {
         !личный вопрос - гайд по покупке личных вопросов
         !бж - играть в блэкджек с нодой
         !(п)осчитай - калькулятор
-        !листья 1000 - конвертер листьев в голду 
+        !листья 1000 - конвертер листьев в голду
+        !дейлик - получить ежедневные монетки 50 
         `);
         message.channel.send(help_desk);
     } else {
