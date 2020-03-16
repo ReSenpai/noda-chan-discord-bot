@@ -1,4 +1,5 @@
 const regex = require('./regex')
+const consts = require('./consts.js');
 const { Attachment, RichEmbed, Emoji, Guild, Client } = require('discord.js');
 const bj = require('./blackjack');
 const queries = require('./queries');
@@ -95,25 +96,47 @@ async function executeCommand(message, user, query) {
             message.channel.send(`Будет стоить ${result.toFixed(2)} голды`);
         }
     // Daily
-    } else if (message.content === '!daily') {
-        const now = new Date();
-        now.setHours(now.getHours() + 3);  //  now time MSK
-        console.log(user.daily_time)
-        user.daily_time = 'kek';
-        console.log(user.daily_time)
+    } else if (regex.daily.test(message.content)) {
+        const now_time = new Date();
+        let check = false;
+        const user_time = () => Math.ceil((now_time.getTime() - user.daily_time.getTime()) / 1000);
 
-        // if (user.daily_time === 'ololo') {
-        //     user.daily_time = 'kek'
+        if (user.daily_time === null) {
+            user.daily_time = now_time
+            check = true;
+        } else if (user_time() < 86400) { 
+            check = false;
+        } else {
+            user.daily_time = now_time
+            check = true;
+        }
 
-            // let daily_message = new RichEmbed()
-            // .setTitle(`Дейлик`)
-            // .setColor(0x36D904)
-            // .setDescription(`
-            // 50 монеток держи
-            // Чеканных монет: ${user.coins} 
-            // `);
-            // message.channel.send(daily_message);
-        // } 
+        if (check) {
+            user.coins += 50
+            let daily_message = new RichEmbed()
+            .setTitle('Ежедневная отметка')
+            .setColor(0x009900)
+            .setDescription(`
+            Получено 50 чеканных монет 
+            `)
+            .setFooter(`Ваши монетки: ${user.coins}`);
+            message.channel.send(daily_message);
+        } else {
+            const time = 86400 - user_time();
+            console.log(time);
+            const seconds = Math.floor( time % 60 );
+            const minutes = Math.floor( (time/60) % 60 );
+            const hours = Math.floor( (time/(60*60)) % 24 );
+            let daily_message = new RichEmbed()
+            .setTitle('Слишком рано')
+            .setColor(0xEF5350)
+            .setDescription(`
+            С момента последней отметки прошло меньше суток.
+            
+            Времени осталось - ${hours}:${('0' + minutes).slice(-2)}:${('0' + seconds).slice(-2)}
+            `);
+            message.channel.send(daily_message);
+        }
     // buy questions with code
     } else if (regex.just_question.test(message.content)) {
         console.log(`Noda / MSG / HM / BQ / Buy a question!`);

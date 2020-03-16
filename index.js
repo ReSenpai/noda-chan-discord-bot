@@ -96,7 +96,7 @@ bot.on('message', async message => {
             // update user info in DB
             logger.log(2, 'MSG', 'Update user data in DB');
             logger.time(3, 'MSG', 'Update user data time');
-            query(queries.sql_upd_user_info, [user.coins, user.exp, user.lvl, user.questions, user.uid, user.daily_time]);
+            query(queries.sql_upd_user_info, [user.coins, user.exp, user.lvl, user.questions, user.daily_time, user.uid]);
             
             // add question into DB
             utils.updUserInfo(message, user, query);

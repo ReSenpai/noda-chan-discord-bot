@@ -1,4 +1,6 @@
+
 const log_lvl = 2;
+
 
 const nodaAnsw = [      'Шито?', 
                         'Отстань, я занята...', 
@@ -21,4 +23,4 @@ const bjMessage = {
     description: [`Ваша ставка привысила размер вашего кошелька\n\nВаш баланс:`,]
 }
 
-module.exports = { log_lvl, nodaAnsw, confusedAnsw };
+module.exports = { log_lvl, nodaAnsw, confusedAnsw};
