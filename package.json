@@ -9,6 +9,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^11.5.1"
+    "cheerio": "^1.0.0-rc.3",
+    "discord.js": "^11.5.1",
+    "engine-blackjack": "^0.9.2",
+    "mysql": "^2.18.1",
+    "natural": "^0.6.3",
+    "osmosis": "^1.1.10",
+    "prompt-sync": "^4.2.0",
+    "request": "^2.88.2"
   }
 }
