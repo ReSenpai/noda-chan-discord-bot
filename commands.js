@@ -1,7 +1,9 @@
 const regex = require('./regex')
-const { Attachment, RichEmbed, Emoji, Guild, Client } = require('discord.js');
+const { Attachment, RichEmbed, Emoji, Guild, Client, MessageReaction, Discord, GuildEmoji} = require('discord.js');
 const bj = require('./blackjack');
 const queries = require('./queries');
+const discord = require('discord.js');
+const guild = new discord.Guild();
 
 async function executeCommand(message, user, query) {
     // Buy questions guide
@@ -111,12 +113,13 @@ async function executeCommand(message, user, query) {
         }
 
         if (check) {
+
             user.coins += 50
             let daily_message = new RichEmbed()
-            .setTitle('Ежедневная отметка')
+            .setTitle('🎁 Ежедневная отметка')
             .setColor(0x009900)
             .setDescription(`
-            Получено 50 чеканных монет 
+            Получено \`50\` чеканных монет 
             `)
             .setFooter(`Ваши монетки: ${user.coins}`);
             message.channel.send(daily_message);
@@ -127,12 +130,12 @@ async function executeCommand(message, user, query) {
             const minutes = Math.floor( (time/60) % 60 );
             const hours = Math.floor( (time/(60*60)) % 24 );
             let daily_message = new RichEmbed()
-            .setTitle('Слишком рано')
+            .setTitle('🃖 Слишком рано')
             .setColor(0xEF5350)
             .setDescription(`
             С момента последней отметки прошло меньше суток.
             
-            Времени осталось - ${hours}:${('0' + minutes).slice(-2)}:${('0' + seconds).slice(-2)}
+            Времени осталось - \`${hours}:${('0' + minutes).slice(-2)}:${('0' + seconds).slice(-2)}\`
             `);
             message.channel.send(daily_message);
         }
@@ -238,7 +241,6 @@ async function executeCommand(message, user, query) {
         Чеканных монет: ${user.coins} 
         `);
         message.channel.send(pushCoins);
-    // Blackjack
     } else if (/^!bj|^!бж/i.test(message.content)) {
         console.log('Noda / MSG / BJ');
         if (/^!bj$|^!бж$/i.test(message.content)) {
