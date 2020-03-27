@@ -4,6 +4,7 @@ const bj = require('./blackjack');
 const queries = require('./queries');
 const discord = require('discord.js');
 const guild = new discord.Guild();
+const two_bots = require('./two_bots');
 
 async function executeCommand(message, user, query) {
     // Buy questions guide
@@ -348,6 +349,8 @@ async function executeCommand(message, user, query) {
         !дейлик - получить ежедневные монетки 50 
         `);
         message.channel.send(help_desk);
+    } else if (regex.two_bots.test(message.content)) {
+        await two_bots.twoBots(message, user);
     } else {
         message.channel.send('Не надо мной командовать, окей?!');
     }

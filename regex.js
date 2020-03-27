@@ -16,6 +16,7 @@ const help = new RegExp(prefix + 'help$|хелп$', 'i');
 const blacklist_calc = /^[^a-z]*$/i;
 const leaves = new RegExp(prefix + 'листья', 'i');
 const daily = new RegExp(prefix + 'дейлик|daily', 'i');
+const two_bots = new RegExp(prefix + 'диалог', 'i');
 
 // blackjack
 
@@ -30,4 +31,4 @@ const bj_help = new RegExp('help$|хелп$', 'i');
 
 
 
-module.exports = {buy_question, buy_common_question, buy_personal_question, just_question, show_profile, personal_question, common_question, question, noda, cube, money, help, deal, surrender, hit, stand, double, insurance, bj_help, calculate, blacklist_calc, leaves, daily};
+module.exports = {buy_question, buy_common_question, buy_personal_question, just_question, show_profile, personal_question, common_question, question, noda, cube, money, help, deal, surrender, hit, stand, double, insurance, bj_help, calculate, blacklist_calc, leaves, daily, two_bots};
