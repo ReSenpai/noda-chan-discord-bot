@@ -299,7 +299,7 @@ async function executeCommand(message, user, query) {
                         .setColor(0x202225)
                         .setDescription(`Цель игры - набрать 21 очко или набрать больше очков,
                                         чем Нода, но не больше 21.\n
-                                        Начать игру вы можете, написав \`!бж ставка 25\`,
+                                        Начать игру вы можете, написав \`!бж 25\`,
                                         сумма ставки может быть любой.\n
                                         В начале игры вам в руку приходят 2 карты, а в руку Ноды
                                         одна. Именно на этом ходу вы можете удвоить свою ставку,
@@ -310,7 +310,7 @@ async function executeCommand(message, user, query) {
                                         Когда вы наберете нужное количество карт, на ваш взгляд,
                                         вы можете передать ход ноде, написав \`!бж хватит\`.\n
                                         Вы так же можете в любой момент игры, до её конца,
-                                        забрать половину вашей ставки - \`!бж пасс\`. `)
+                                        забрать половину вашей ставки - \`!бж пас\`. `)
                     } else if (turn.result_value === 'surrender') {
                         bj_message = new RichEmbed()
                         .setTitle(':x: Нарушение правил игры')
@@ -350,6 +350,7 @@ async function executeCommand(message, user, query) {
         `);
         message.channel.send(help_desk);
     } else if (regex.two_bots.test(message.content)) {
+        // setTimeout(() => message.channel.send(bot_message), 3000);
         await two_bots.twoBots(message, user);
     } else {
         message.channel.send('Не надо мной командовать, окей?!');

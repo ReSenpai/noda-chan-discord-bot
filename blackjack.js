@@ -51,59 +51,64 @@ function action(cmd, num, state, coins) {
     // console.dir(game.state);
     if (cmd == 'reset') {
         state = {};
-    } else if(state) 
+    } else if(state)
         game.setState(state);
-    switch(true) {
-        // раздать карты
-        case regex.deal.test(cmd):
-            console.log(cmd);
-            num = parseInt(cmd) > 0 ? parseInt(cmd) : -1;
-            console.log(num);
-            if (num > 0 && coins >= num) {
-                game.dispatch(actions.deal({ bet: num, sideBets: { luckyLucky: 0 } }));
-                coins -= num;
-            } else if (num <= 0) {
-                result_value = 4;
-            } else {
-                result_value = 2;
-                console.log('incorrect ammount - deal');
-            }
-            break;
-        // забрать пол ставки и сдаться
-        case regex.surrender.test(cmd):
-            game.dispatch(actions.surrender());
-            state.handInfo.right.availableActions.surrender ? result_value = 0 : result_value = 'surrender';
-            break;
-        // взять карту
-        case regex.hit.test(cmd):
-            game.dispatch(actions.hit('right'));
-            break;
-        // больше карт не нужно
-        case regex.stand.test(cmd):
-            game.dispatch(actions.stand('right'));
-            break;
-        // удвоить ставку после разлачи
-        case regex.double.test(cmd):
-            if (coins >= state.initialBet) {
-                coins -= state.initialBet;
-                game.dispatch(actions.double('right'));
-                state.handInfo.right.availableActions.double ? result_value = 0 : result_value = 'double';
-                console.log('Double')
-            } else {
-                result_value = 3;
-                console.log('Not enough coins');
-            }
-            break;
-        // застраховать руку, если диллеру пришел туз первой картой
-        case regex.insurance.test(cmd):
-            if (num >= 0)
-                game.dispatch(actions.insurance(num));
-            else
-                console.log('incorrect ammount');
-            break;
-        case regex.bj_help.test(cmd):
-            result_value = 5;
-            break;
+        switch(true) {
+            // раздать карты
+            case regex.deal.test(cmd):
+                console.log(cmd);
+                num = parseInt(cmd) > 0 ? parseInt(cmd) : -1;
+                console.log(num);
+                if (num > 0 && coins >= num) {
+                    game.dispatch(actions.deal({ bet: num, sideBets: { luckyLucky: 0 } }));
+                    coins -= num;
+                    console.log('i am here')
+                } else if (num <= 0) {
+                    result_value = 4;
+                } else {
+                    result_value = 2;
+                    console.log('incorrect ammount - deal');
+                }
+                break;
+            // забрать пол ставки и сдаться
+            case regex.surrender.test(cmd):
+                game.dispatch(actions.surrender());
+                state.handInfo.right.availableActions.surrender ? result_value = 0 : result_value = 'surrender';
+                break;
+            // взять карту
+            case regex.hit.test(cmd):
+                game.dispatch(actions.hit('right'));
+                break;
+            // больше карт не нужно
+            case regex.stand.test(cmd):
+                game.dispatch(actions.stand('right'));
+                break;
+            // удвоить ставку после раздачи
+            case regex.double.test(cmd):
+                if (coins >= state.initialBet) {
+                    coins -= state.initialBet;
+                    game.dispatch(actions.double('right'));
+                    state.handInfo.right.availableActions.double ? result_value = 0 : result_value = 'double';
+                    console.log('Double')
+                } else {
+                    result_value = 3;
+                    console.log('Not enough coins');
+                }
+                break;
+            // застраховать руку, если диллеру пришел туз первой картой
+            case regex.insurance.test(cmd):
+                if (num >= 0)
+                    game.dispatch(actions.insurance(num));
+                else
+                    console.log('incorrect ammount');
+                break;
+            case regex.bj_help.test(cmd):
+                result_value = 5;
+                break;
+            // плашка для неверной команды
+            default:
+                result_value = 5;
+                break;
     }
     state = game.getState();
     console.log(state.handInfo.right.availableActions);
@@ -144,7 +149,7 @@ function action(cmd, num, state, coins) {
         let your_sum = your_hi === your_lo ? your_lo : (`от ${your_lo} до ${your_hi} (Есть туз)`);
         command = `
             \`!бж еще\` взять карту, \`!бж хватит\` - закончить ход,
-            \`!бж пасс\` выйти, \`!бж удвоить\` для удвоения`;
+            \`!бж пас\` выйти, \`!бж удвоить\` для удвоения`;
         noda_hand = `
             \n\nРука ноды`;
         noda_hand_cards = `
