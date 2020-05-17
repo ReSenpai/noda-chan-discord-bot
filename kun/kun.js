@@ -20,7 +20,7 @@ bot.on('message', async message => {
     };
     
     if(message.author.bot) {
-        await two_bots.twoBots(message);
+        two_bots.twoBots(message);
     }
 });
 

@@ -1,13 +1,10 @@
-
+const data = require('../two_bots.json');
+const update = require('../two_bots.json');
 const fs = require('fs');
 
 async function twoBots(message) {
     // Start dialoge
     if (message.author.id === '677662460748234762') {
-
-        const data = require('../two_bots.json');
-        const update = require('../two_bots.json');
-        
         console.log(`${data.randomNoda} - рандом НОДЫ`);
         console.log(`${data.start.noda[data.randomNoda]} - сообщение НОДЫ`);
         const random = Math.ceil((Math.random() * data.start.kun[data.randomNoda].length) - 1);
@@ -21,7 +18,7 @@ async function twoBots(message) {
             if(err) console.log(err);
         });
     
-        if (message.content == data.start.noda[data.randomNoda]) {
+        if (message.content === data.start.noda[data.randomNoda]) {
             setTimeout(() => message.channel.send(bot_message), 3000);
         }
     } else {

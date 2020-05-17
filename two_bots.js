@@ -10,16 +10,12 @@ async function twoBots(message, user) {
     update.randomNoda = random;
     let bot_message = data.start.noda[random];
 
-    console.log(data.randomNoda);
-    console.log(data.randomKun);
-
-    fs.writeFile('./two_bots.json', JSON.stringify(update, null, 2), function writeJSON(err) {
-        if (err) return console.log(err);
-        console.log(JSON.stringify(update));
-        console.log(data);
-      });
+    fs.writeFile('./two_bots.json', JSON.stringify(update, null, 2),(err) => {
+        if(err) console.log(err);
+    });
 
     setTimeout(() => message.channel.send(bot_message), 3000);
+    console.log(data.randomNoda);
 }
 
 module.exports.twoBots = twoBots;
