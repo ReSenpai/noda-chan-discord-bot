@@ -1,5 +1,7 @@
 const natural = require('natural');
 const queries = require('./queries');
+const { Attachment, RichEmbed, Emoji, Guild, Client, MessageReaction, Discord, GuildEmoji} = require('discord.js');
+
 
 // russian stemming
 var tokenizer = new natural.WordTokenizer();
@@ -13,10 +15,12 @@ function stemming(str) {
     console.log(`Noda / Stemmed / ${str_stemmed}`);
     return str_stemmed;
 }
-                    
+    
+
 function rndAnswer(answers) {
     return answers[Math.ceil(Math.random() * answers.length)];
 }
+
 
 async function updUserInfo(message, user, query) {
     // if the user created a question
@@ -35,6 +39,7 @@ async function updUserInfo(message, user, query) {
     }
 }
 
+
 function getDiscordInfo(message, user, query) {
     // user info from discord
     user.uid = message.author.id;
@@ -49,4 +54,32 @@ function getDiscordInfo(message, user, query) {
     user.avatar = message.author.avatarURL;
 }
 
-module.exports = {stemming, rndAnswer, updUserInfo, getDiscordInfo};
+
+// string format
+if (!String.prototype.format) {
+  String.prototype.format = function() {
+    var args = arguments;
+    return this.replace(/{(\d+)}/g, function(match, number) { 
+      return typeof args[number] != 'undefined'
+        ? args[number]
+        : match;
+    });
+  };
+}
+
+
+function sendMessage(message, obj, title_pars = [], desc_pars = [], footer_pars = [], thumbnail = '', fields = []) {
+    const rich_message = new RichEmbed()
+            .setTitle(obj.title.format(...title_pars))
+            .setColor(obj.color)
+            .setDescription(obj.description.format(...desc_pars))
+            .setFooter(obj.footer.format(...footer_pars))
+            .setThumbnail(thumbnail);
+    for (field of fields) {
+        rich_message.addField(...field);
+    }
+    message.channel.send(rich_message);
+}
+
+
+module.exports = {stemming, rndAnswer, updUserInfo, getDiscordInfo, sendMessage};
