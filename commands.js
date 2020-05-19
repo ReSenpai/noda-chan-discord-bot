@@ -5,66 +5,29 @@ const queries = require('./queries');
 const discord = require('discord.js');
 const guild = new discord.Guild();
 const two_bots = require('./two_bots');
+const utils = require('./utils');
+const messages = require('./messages.js')
 
 async function executeCommand(message, user, query) {
     // Buy questions guide
     if (regex.buy_question.test(message.content)) {
         console.log(`Noda / MSG / HM / Buy question info`);
-        const shop = new RichEmbed()
-            .setTitle(`Нода-шоп!`)
-            .setColor(0xebe134)
-            .setDescription(`
-            Ваш баланс монет: ${user.coins}
-            Купить общий вопрос: 25 чеканных монет
-            Купить личный вопрос: 100 чеканных монет
-
-            Для покупки общего вопроса напишите: !общий вопрос
-            Для покупки личного вопроса напишите: !личный вопрос
-            `);
-        message.channel.send(shop);
+        utils.sendMessage(message, messages.buy_question, [], [user.coins], []);
     // Buy common_questions guide
     } else if (regex.buy_common_question.test(message.content)) {
         console.log(`Noda / MSG / HM / Buy common question info`);
         if(user.coins >= 25){
-            const commonQuestion = new RichEmbed()
-            .setTitle(`Покупка общего вопроса.`)
-            .setColor(0xebe134)
-            .setDescription(`
-            Ваш баланс монет: ${user.coins}
-            Для покупки вопроса напишите или лучше скопируйте как шаблон:
-            !вопрос [Тут пишите ваш вопрос, обязательно в квадратных скобочках] [А тут ваш ответ, так же в квадратных скобочках]
-            `);
-            message.channel.send(commonQuestion);
+            utils.sendMessage(message, messages.buy_common_question, [], [user.coins], []);
         } else {
-            const commonQuestionFalse = new RichEmbed()
-            .setTitle(`Отказано.`)
-            .setColor(0xFF0000)
-            .setDescription(`
-            Не хватает чеканных монет, ваш баланс: ${user.coins}
-            `);
-            message.channel.send(commonQuestionFalse);
+            utils.sendMessage(message, messages.buy_question_den, [], [user.coins], []);
         }  
     // Buy personal_question guide 
     } else if (regex.buy_personal_question.test(message.content)) {
         console.log(`Noda / MSG / HM / Buy personal question info`);
         if(user.coins >= 100){
-            let plate = new RichEmbed()
-            .setTitle(`Покупка личного вопроса.`)
-            .setColor(0xebe134)
-            .setDescription(`
-            Ваш баланс монет: ${user.coins}
-            Для покупки вопроса напишите или лучше скопируйте как шаблон:
-            !вопрос [Тут пишите ваш вопрос, обязательно в квадратных скобочках] [А тут ваш ответ, так же в квадратных скобочках] [личный]
-            `);
-            message.channel.send(plate);
+            utils.sendMessage(message, messages.buy_personal_question, [], [user.coins], []);
         } else {
-            let plate_false = new RichEmbed()
-            .setTitle(`Отказано.`)
-            .setColor(0xFF0000)
-            .setDescription(`
-            Не хватает чеканных монет, ваш баланс: ${user.coins}
-            `);
-            message.channel.send(plate_false);
+            utils.sendMessage(message, messages.buy_question_den, [], [user.coins], []);
         }  
     // calculate
     } else if (regex.calculate.test(message.content)) {
@@ -114,31 +77,15 @@ async function executeCommand(message, user, query) {
         }
 
         if (check) {
-
             user.coins += 50
-            let daily_message = new RichEmbed()
-            .setTitle('🎁 Ежедневная отметка')
-            .setColor(0x009900)
-            .setDescription(`
-            Получено \`50\` чеканных монет 
-            `)
-            .setFooter(`Ваши монетки: ${user.coins}`);
-            message.channel.send(daily_message);
+            utils.sendMessage(message, messages.daily_message, [], [], [user.coins]);
         } else {
             const time = 86400 - user_time();
             console.log(time);
-            const seconds = Math.floor( time % 60 );
-            const minutes = Math.floor( (time/60) % 60 );
+            const seconds = ('0' + Math.floor( time % 60 )).slice(-2);
+            const minutes = ('0' + Math.floor( (time / 60) % 60 )).slice(-2);
             const hours = Math.floor( (time/(60*60)) % 24 );
-            let daily_message = new RichEmbed()
-            .setTitle('🃖 Слишком рано')
-            .setColor(0xEF5350)
-            .setDescription(`
-            С момента последней отметки прошло меньше суток.
-            
-            Времени осталось - \`${hours}:${('0' + minutes).slice(-2)}:${('0' + seconds).slice(-2)}\`
-            `);
-            message.channel.send(daily_message);
+            utils.sendMessage(message, messages.daily_message_den, [], [hours, minutes, seconds], []);
         }
     // buy questions with code
     } else if (regex.just_question.test(message.content)) {
@@ -170,62 +117,30 @@ async function executeCommand(message, user, query) {
                 user.coins -= 25;
             } else {
                 console.log(`Noda / MSG / HM / BQ / Incorrect question type`);
-                let plate = new RichEmbed()
-                .setTitle(`Ошибка`)
-                .setColor(0xFF0000)
-                .setDescription(`
-                Вы неправильно указали тип вопроса.
-                Для покупки личного вопроса, в конце оформления покупки обычного вопроса допишите [личный].
-                Для покупки общего вопроса можно вообще не писать тип вопроса или напишите [общий]
-                `)
-                bot.send(plate);
+                utils.sendMessage(message, messages.inc_question, [], [], []);
                 return;
             }
             user.questions += 1;
             console.log(`Noda / MSG / HM / BQ / Q: '${user.question}', A: '${user.answer}', T: '${user.question_type}'`);
-            const commonQuestionBye = new RichEmbed()
-            .setTitle(`Покупка оформлена.`)
-            .setColor(0x36D904)
-            .setDescription(`
-            Ваш вопрос: ${user.question}
-            Ваш ответ: ${user.answer}
-            Тип вопроса: ${user.question_type === 0 ? 'общий' : 'личный'}
-            Осталось чеканных монет: ${user.coins}
-            Приятного использования😘
-            `);
-            message.channel.send(commonQuestionBye);
+            utils.sendMessage(message, messages.quest_bought, [], [
+                user.question, 
+                user.answer, 
+                user.question_type === 0 ? 'общий' : 'личный',
+                user.coins,
+            ], []);
         } else {
             console.log(`Noda / MSG / HM / Not enough money for a common question`);
-            message.channel.send(`${args.length >= 2 ? 'Не хватает чеканных монет, ваш баланс:' + user.coins : 'Вы неправильно написали шаблон для покупки вопроса, можете посмотреть правильные шаблоны, написав "!купить общий вопрос" или "!купить личный вопрос"'}`);
+            message.channel.send(`${args.length >= 2 ? 'Не хватает чеканных монет, ваш баланс:' + user.coins : 'Вы неправильно написали шаблон для покупки вопроса, можете посмотреть правильные шаблоны, написав "!купить вопрос"'}`);
         }
     // Show profiles
     } else if (regex.show_profile.test(message.content)) {
         console.log(`Noda / MSG / HM / Show profiles`);
-        try {
-            let embed = new RichEmbed()
-            .setTitle(`Профиль игрока: ${user.server_name}`)
-            .setColor(0x0a4bff)
-            .setDescription(`
-            :trophy:LVL: ${user.lvl}
-            :jigsaw:XP: ${user.exp}
-            :moneybag:Чеканных монет: ${user.coins}
-            :key:Общих вопросов куплено: ${user.questions}
-            `)
-            .setThumbnail(user.avatar)
-            message.channel.send(embed);
-        } catch (error) {
-            let embed = new RichEmbed()
-            .setTitle(`Профиль игрока: ${user.user_name}`)
-            .setColor(0x0a4bff)
-            .setDescription(`
-            :trophy:LVL: ${user.lvl}
-            :jigsaw:XP: ${user.exp}
-            Чеканных монет: ${user.coins} :moneybag:
-            :key:Общих вопросов куплено: ${user.questions}
-            `)
-            .setThumbnail(user.avatar)
-            message.channel.send(embed);
-        }
+        utils.sendMessage(message, messages.profile, [user.server_name?user.server_name:user.user_name], [
+            user.lvl, 
+            user.exp, 
+            user.coins,
+            user.questions
+        ], [], user.avatar);
     // Throw a cube
     } else if (regex.cube.test(message.content)) {
         console.log(`Noda / MSG / HM / Throw a cube`);
@@ -234,23 +149,11 @@ async function executeCommand(message, user, query) {
         console.log(`Noda / MSG / HM / QN / Give some coins`);
         // give 100 coins
         user.coins += 100;
-        let pushCoins = new RichEmbed()
-        .setTitle(`Запрос халявных монеток`)
-        .setColor(0x36D904)
-        .setDescription(`
-        Держи 100 монеток :moneybag:
-        Чеканных монет: ${user.coins} 
-        `);
-        message.channel.send(pushCoins);
+        utils.sendMessage(message, messages.give_coins, [], [user.coins], []);
     } else if (/^!bj|^!бж/i.test(message.content)) {
         console.log('Noda / MSG / BJ');
         if (/^!bj$|^!бж$/i.test(message.content)) {
-            const bj_error = new RichEmbed()
-            .setTitle(':x: Не хватает аргументов')
-            .setColor(0xEF5350)
-            .setDescription(`Используйте \`!бж ставка 25\`\n\nСумма ставки может быть любой\n
-                            \`!бж хелп\` - что бы посмотреть правила игры.`)
-            message.channel.send(bj_error);
+            utils.sendMessage(message, messages.bj, [], [], []);
         } else {
             try {
                 const bj_data = await query(queries.sql_get_bj_state, [user.uid]);
@@ -267,64 +170,30 @@ async function executeCommand(message, user, query) {
                 user.coins = turn.coins;
                 let stateJSON = JSON.stringify(turn.state);
                 query(queries.sql_upd_bj_state, [user.uid, stateJSON, stateJSON]);
-                let bj_message = new RichEmbed();
-                    if (turn.result_value === 0 || turn.result_value === 1) {
-                        bj_message = new RichEmbed()
-                        .setTitle(true ? `Блэкджек | ${user.server_name === null ? user.user_name : user.server_name}` : 'Black Jack with Noda')
-                        .setColor(turn.color)
-                        .setDescription(`${turn.result_value === 0 ? turn.command : turn.result}`)
-                        .addField(turn.noda_hand, turn.noda_hand_cards, true)
-                        .addField(turn.you_hand, turn.you_hand_cards, turn.result_value === 0 ? true : false)
-                        .setFooter(turn.footer);
-                    } else if (turn.result_value === 2) {
-                        bj_message = new RichEmbed()
-                        .setTitle(':x: Не хватает монет')
-                        .setColor(0xEF5350)
-                        .setDescription(`Ваша ставка привысила размер вашего кошелька\n\nВаш баланс: ${user.coins}`)
-                        .setFooter(turn.footer);
-                    } else if (turn.result_value === 3) {
-                        bj_message = new RichEmbed()
-                        .setTitle(':x: Не хватает монет')
-                        .setColor(0xEF5350)
-                        .setDescription(`У вас в кошельке не хватает монет для удвоения\n\nВаш баланс: ${user.coins}`)
-                        .setFooter(turn.footer);
-                    } else if (turn.result_value === 4) {
-                        bj_message = new RichEmbed()
-                        .setTitle(':x: Не хватает аргументов')
-                        .setColor(0xEF5350)
-                        .setDescription(`Вы не указали сумму ставки\n\nИспользуйте \`!бж ставка 25\`\n\nСумма ставки может быть любой`)
-                    } else if (turn.result_value === 5) {
-                        bj_message = new RichEmbed()
-                        .setTitle('Правила игры: Блэкджек')
-                        .setColor(0x202225)
-                        .setDescription(`Цель игры - набрать 21 очко или набрать больше очков,
-                                        чем Нода, но не больше 21.\n
-                                        Начать игру вы можете, написав \`!бж ставка 25\`,
-                                        сумма ставки может быть любой.\n
-                                        В начале игры вам в руку приходят 2 карты, а в руку Ноды
-                                        одна. Именно на этом ходу вы можете удвоить свою ставку,
-                                        написав \`!бж удвоить\`. Это действие сразу передает ход
-                                        Ноде и его можно сделать только в самом начале игры.\n
-                                        Если вы не хотите удваивать, можете добрать еще карту,
-                                        написав \`!бж еще\`.\n
-                                        Когда вы наберете нужное количество карт, на ваш взгляд,
-                                        вы можете передать ход ноде, написав \`!бж хватит\`.\n
-                                        Вы так же можете в любой момент игры, до её конца,
-                                        забрать половину вашей ставки - \`!бж пасс\`. `)
-                    } else if (turn.result_value === 'surrender') {
-                        bj_message = new RichEmbed()
-                        .setTitle(':x: Нарушение правил игры')
-                        .setColor(0xEF5350)
-                        .setDescription(`Вы можете забрать половину ставки только
-                        на первичной раздаче.
-                        \nСейчас доступно \`!бж еще\` и \`!бж хватит\``)
-                    } else if (turn.result_value === 'double') {
-                        bj_message = new RichEmbed()
-                        .setTitle(':x: Нарушение правил игры')
-                        .setColor(0xEF5350)
-                        .setDescription(`Вы можете удвоить ставку только на первичной раздаче.
-                        \nСейчас доступно \`!бж еще\` и \`!бж хватит\``)
-                    }
+                if (turn.result_value === 0 || turn.result_value === 1) {
+                    // lol
+                    utils.sendMessage(message, {
+                        'title': `Блэкджек | ${ user.server_name ? user.server_name : user.user_name }`,
+                        'color': turn.color,
+                        'description': `${ turn.result_value ? turn.result : turn.command }`,
+                        'footer': turn.footer,
+                    }, [], [], [], '', [
+                        [turn.noda_hand, turn.noda_hand_cards, true],
+                        [turn.you_hand, turn.you_hand_cards, turn.result_value === 0 ? true : false],
+                    ]);
+                } else if (turn.result_value === 2) {
+                    utils.sendMessage(message, messages.bj_no_money, [], [user.coins], []);
+                } else if (turn.result_value === 3) {
+                    utils.sendMessage(message, messages.bj_no_money_double, [], [user.coins], []);
+                } else if (turn.result_value === 4) {
+                    utils.sendMessage(message, messages.bj_inc_bet, [], [], []);
+                } else if (turn.result_value === 5) {
+                    utils.sendMessage(message, messages.bj_help, [], [], []);
+                } else if (turn.result_value === 'surrender') {
+                    utils.sendMessage(message, messages.bj_surrender_er, [], [], []);
+                } else if (turn.result_value === 'double') {
+                    utils.sendMessage(message, messages.bj_double_er, [], [], []);
+                }
                 message.channel.send(bj_message);
             } catch (error) {
                 console.log('Noda / MSG / BJ / Error');
@@ -332,23 +201,7 @@ async function executeCommand(message, user, query) {
             }
         }
     } else if (regex.help.test(message.content)) {
-        let help_desk = new RichEmbed()
-        .setTitle(`Список команд бота`)
-        .setColor(0x36D904)
-        .setDescription(`
-        Нода - можно получить рандомный ответ на обращение к боту 
-        !профиль - посмотреть свой профиль у ноды
-        !кубик - кинуть кости от 1 до 10
-        !монетки - получить 100 монеток(временная функция для тестеров)
-        !купить вопрос - зайти в шоп, для покупки вопросов
-        !общий вопрос - гайд по покупке обших вопросов
-        !личный вопрос - гайд по покупке личных вопросов
-        !бж - играть в блэкджек с нодой
-        !(п)осчитай - калькулятор
-        !листья 1000 - конвертер листьев в голду
-        !дейлик - получить ежедневные монетки 50 
-        `);
-        message.channel.send(help_desk);
+        utils.sendMessage(message, messages.help, [], [], []);
     } else if (regex.two_bots.test(message.content)) {
         await two_bots.twoBots(message, user);
     } else {
